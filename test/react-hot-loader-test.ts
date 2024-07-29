@@ -1,8 +1,8 @@
 import * as assert from "assert";
 
-import {type Transform, transform} from "../src";
-import {ESMODULE_PREFIX, IMPORT_DEFAULT_PREFIX, RHL_PREFIX} from "./prefixes";
-import {assertResult} from "./util";
+import {type Transform, transform} from "../src/index.js";
+import {ESMODULE_PREFIX, IMPORT_DEFAULT_PREFIX, RHL_PREFIX} from "./prefixes.js";
+import {assertResult} from "./util.js";
 
 function assertCJSResult(
   code: string,

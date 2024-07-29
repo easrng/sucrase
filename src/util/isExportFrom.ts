@@ -1,6 +1,6 @@
-import {ContextualKeyword} from "../parser/tokenizer/keywords";
-import {TokenType as tt} from "../parser/tokenizer/types";
-import type TokenProcessor from "../TokenProcessor";
+import {ContextualKeyword} from "../parser/tokenizer/keywords.js";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
+import type TokenProcessor from "../TokenProcessor.js";
 
 /**
  * Starting at `export {`, look ahead and return `true` if this is an

@@ -4,8 +4,8 @@ import {
   JSX_PREFIX,
   NULLISH_COALESCE_PREFIX,
   OPTIONAL_CHAIN_PREFIX,
-} from "./prefixes";
-import {assertResult} from "./util";
+} from "./prefixes.js";
+import {assertResult} from "./util.js";
 
 function assertCJSResult(code: string, expectedResult: string): void {
   assertResult(code, expectedResult, {transforms: ["jsx", "jest", "imports"]});

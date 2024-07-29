@@ -5,8 +5,8 @@ import {
   IMPORT_DEFAULT_PREFIX,
   IMPORT_WILDCARD_PREFIX,
   JSX_PREFIX,
-} from "./prefixes";
-import {assertMultiFileOutput, assertResult, devProps} from "./util";
+} from "./prefixes.js";
+import {assertMultiFileOutput, assertResult, devProps} from "./util.js";
 
 describe("transform imports", () => {
   it("transforms export default", () => {

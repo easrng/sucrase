@@ -1,4 +1,4 @@
-const {transform} = require("../dist");
+const {transform} = require("../dist/cjs/index.js");
 
 // Enum constants taken from the TypeScript codebase.
 const ModuleKindCommonJS = 1;

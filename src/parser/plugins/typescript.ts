@@ -10,10 +10,10 @@ import {
   popTypeContext,
   pushTypeContext,
   rescan_gt,
-} from "../tokenizer/index";
-import {ContextualKeyword} from "../tokenizer/keywords";
-import {TokenType, TokenType as tt} from "../tokenizer/types";
-import {isJSXEnabled, state} from "../traverser/base";
+} from "../tokenizer/index.js";
+import {ContextualKeyword} from "../tokenizer/keywords.js";
+import {TokenType, TokenType as tt} from "../tokenizer/types.js";
+import {isJSXEnabled, state} from "../traverser/base.js";
 import {
   atPossibleAsync,
   baseParseMaybeAssign,
@@ -29,8 +29,12 @@ import {
   parsePropertyName,
   parseTemplate,
   type StopState,
-} from "../traverser/expression";
-import {parseBindingIdentifier, parseBindingList, parseImportedIdentifier} from "../traverser/lval";
+} from "../traverser/expression.js";
+import {
+  parseBindingIdentifier,
+  parseBindingList,
+  parseImportedIdentifier,
+} from "../traverser/lval.js";
 import {
   baseParseMaybeDecoratorArguments,
   parseBlockBody,
@@ -39,7 +43,7 @@ import {
   parseFunctionParams,
   parseStatement,
   parseVarStatement,
-} from "../traverser/statement";
+} from "../traverser/statement.js";
 import {
   canInsertSemicolon,
   eatContextual,
@@ -51,8 +55,8 @@ import {
   isLookaheadContextual,
   semicolon,
   unexpected,
-} from "../traverser/util";
-import {nextJSXTagToken} from "./jsx";
+} from "../traverser/util.js";
+import {nextJSXTagToken} from "./jsx/index.js";
 
 function tsIsIdentifier(): boolean {
   // TODO: actually a bit more complex in TypeScript, but shouldn't matter.

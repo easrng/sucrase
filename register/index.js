@@ -1,1 +1,1 @@
-require("../dist/register").registerAll();
+require("../dist/cjs/register").registerAll();

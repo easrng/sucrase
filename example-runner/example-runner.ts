@@ -1,8 +1,9 @@
-#!./node_modules/.bin/sucrase-node
+#!./node_modules/.bin/tsx
 /* eslint-disable no-console */
-import {exists, readFile} from "mz/fs";
+import {readFile} from "fs/promises";
 
-import run from "../script/run";
+import run from "../script/run.js";
+import {exists} from "../src/util/exists.js";
 
 const EXAMPLES: {[name: string]: string} = {
   decaffeinate: "https://github.com/decaffeinate/decaffeinate.git",

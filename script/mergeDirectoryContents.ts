@@ -1,5 +1,7 @@
-import {copyFile, exists, mkdir, readdir, stat} from "mz/fs";
+import {copyFile, mkdir, readdir, stat} from "fs/promises";
 import {join} from "path";
+
+import {exists} from "../src/util/exists.js";
 
 export default async function mergeDirectoryContents(
   srcDirPath: string,

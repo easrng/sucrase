@@ -1,9 +1,9 @@
 import * as assert from "assert";
 
-import {parse} from "../src/parser";
-import {IdentifierRole, JSXRole, type Token} from "../src/parser/tokenizer";
-import {ContextualKeyword} from "../src/parser/tokenizer/keywords";
-import {TokenType, TokenType as tt} from "../src/parser/tokenizer/types";
+import {parse} from "../src/parser/index.js";
+import {IdentifierRole, JSXRole, type Token} from "../src/parser/tokenizer/index.js";
+import {ContextualKeyword} from "../src/parser/tokenizer/keywords.js";
+import {TokenType, TokenType as tt} from "../src/parser/tokenizer/types.js";
 
 type SimpleToken = Token & {label?: string};
 type TokenExpectation = {[K in keyof SimpleToken]?: SimpleToken[K]};

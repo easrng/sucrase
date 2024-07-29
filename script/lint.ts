@@ -1,8 +1,7 @@
-#!./node_modules/.bin/sucrase-node
+#!./node_modules/.bin/tsx
 /* eslint-disable no-console */
-import {exists} from "mz/fs";
-
-import run from "./run";
+import {exists} from "../src/util/exists.js";
+import run from "./run.js";
 
 const TSC = "./node_modules/.bin/tsc";
 const ESLINT = "./node_modules/.bin/eslint";
@@ -41,7 +40,7 @@ async function checkSucrase(): Promise<void> {
         "src",
         "test",
       ]
-        .map((dir) => `'${dir}/**/*.ts'`)
+        .map((dir) => `'${dir}/**/*.{ts,mts,cts}'`)
         .join(" ")}`,
     ),
   ]);

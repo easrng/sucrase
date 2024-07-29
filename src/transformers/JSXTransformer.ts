@@ -1,14 +1,14 @@
-import type CJSImportProcessor from "../CJSImportProcessor";
-import type {Options} from "../index";
-import type NameManager from "../NameManager";
-import XHTMLEntities from "../parser/plugins/jsx/xhtml";
-import {JSXRole} from "../parser/tokenizer";
-import {TokenType as tt} from "../parser/tokenizer/types";
-import {charCodes} from "../parser/util/charcodes";
-import type TokenProcessor from "../TokenProcessor";
-import getJSXPragmaInfo, {type JSXPragmaInfo} from "../util/getJSXPragmaInfo";
-import type RootTransformer from "./RootTransformer";
-import Transformer from "./Transformer";
+import type CJSImportProcessor from "../CJSImportProcessor.js";
+import type {CoreOptions} from "../core.js";
+import type NameManager from "../NameManager.js";
+import XHTMLEntities from "../parser/plugins/jsx/xhtml.js";
+import {JSXRole} from "../parser/tokenizer/index.js";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
+import {charCodes} from "../parser/util/charcodes.js";
+import type TokenProcessor from "../TokenProcessor.js";
+import getJSXPragmaInfo, {type JSXPragmaInfo} from "../util/getJSXPragmaInfo.js";
+import type RootTransformer from "./RootTransformer.js";
+import Transformer from "./Transformer.js";
 
 export default class JSXTransformer extends Transformer {
   jsxPragmaInfo: JSXPragmaInfo;
@@ -33,7 +33,7 @@ export default class JSXTransformer extends Transformer {
     readonly tokens: TokenProcessor,
     readonly importProcessor: CJSImportProcessor | null,
     readonly nameManager: NameManager,
-    readonly options: Options,
+    readonly options: CoreOptions,
   ) {
     super();
     this.jsxPragmaInfo = getJSXPragmaInfo(options);

@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
-import {readFile} from "mz/fs";
+import {readFile} from "fs/promises";
 
-import run from "./run";
-import sleep from "./sleep";
+import run from "./run.js";
+import sleep from "./sleep.js";
 
 /**
  * This script releases the core sucrase package (NOT any integrations). To use:

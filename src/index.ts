@@ -1,72 +1,70 @@
-import CJSImportProcessor from "./CJSImportProcessor";
-import computeSourceMap, {type RawSourceMap} from "./computeSourceMap";
-import {HelperManager} from "./HelperManager";
-import identifyShadowedGlobals from "./identifyShadowedGlobals";
-import NameManager from "./NameManager";
-import {validateOptions} from "./Options";
-import type {Options, SourceMapOptions, Transform} from "./Options";
-import {parse} from "./parser";
-import type {Scope} from "./parser/tokenizer/state";
-import TokenProcessor from "./TokenProcessor";
-import RootTransformer from "./transformers/RootTransformer";
-import formatTokens from "./util/formatTokens";
-import getTSImportedNames from "./util/getTSImportedNames";
+import {
+  type CoreOptions,
+  type SourceMapOptions,
+  type SucraseContext,
+  type TransformResult,
+  coreGetFormattedTokens,
+  getVersion,
+  coreTransform,
+  type Transformers,
+} from "./core.js";
+import CJSImportTransformer from "./transformers/CJSImportTransformer.js";
+import ESMImportTransformer from "./transformers/ESMImportTransformer.js";
+import FlowTransformer from "./transformers/FlowTransformer.js";
+import JestHoistTransformer from "./transformers/JestHoistTransformer.js";
+import JSXTransformer from "./transformers/JSXTransformer.js";
+import NumericSeparatorTransformer from "./transformers/NumericSeparatorTransformer.js";
+import OptionalCatchBindingTransformer from "./transformers/OptionalCatchBindingTransformer.js";
+import OptionalChainingNullishTransformer from "./transformers/OptionalChainingNullishTransformer.js";
+import ReactDisplayNameTransformer from "./transformers/ReactDisplayNameTransformer.js";
+import ReactHotLoaderTransformer from "./transformers/ReactHotLoaderTransformer.js";
+import TypeScriptTransformer from "./transformers/TypeScriptTransformer.js";
 
-export interface TransformResult {
-  code: string;
-  sourceMap?: RawSourceMap;
-}
-
-export interface SucraseContext {
-  tokenProcessor: TokenProcessor;
-  scopes: Array<Scope>;
-  nameManager: NameManager;
-  importProcessor: CJSImportProcessor | null;
-  helperManager: HelperManager;
-}
-
-export type {Options, SourceMapOptions, Transform};
-
-export function getVersion(): string {
-  /* istanbul ignore next */
-  return "3.35.0";
+export type Transform = "jsx" | "typescript" | "flow" | "imports" | "react-hot-loader" | "jest";
+export type Options = Omit<CoreOptions, "transformers"> & {
+  transforms: Array<Transform>;
+  disableESTransforms?: boolean;
+};
+function coreify(options: Options): CoreOptions {
+  const transformers: Transformers = options.transforms.includes("imports")
+    ? {
+        CJSImportTransformer,
+      }
+    : {
+        ESMImportTransformer,
+      };
+  for (const name of options.transforms) {
+    if (name === "jsx") {
+      transformers.JSXTransformer = JSXTransformer;
+      transformers.ReactDisplayNameTransformer = ReactDisplayNameTransformer;
+    }
+    if (name === "typescript") {
+      transformers.TypeScriptTransformer = TypeScriptTransformer;
+    }
+    if (name === "flow") {
+      transformers.FlowTransformer = FlowTransformer;
+    }
+    if (name === "react-hot-loader") {
+      transformers.ReactHotLoaderTransformer = ReactHotLoaderTransformer;
+    }
+    if (name === "jest") {
+      transformers.JestHoistTransformer = JestHoistTransformer;
+    }
+  }
+  if (!options.disableESTransforms) {
+    transformers.NumericSeparatorTransformer = NumericSeparatorTransformer;
+    transformers.OptionalCatchBindingTransformer = OptionalCatchBindingTransformer;
+    transformers.OptionalChainingNullishTransformer = OptionalChainingNullishTransformer;
+    transformers.ClassTransformer = true;
+  }
+  return {
+    ...options,
+    transformers,
+  };
 }
 
 export function transform(code: string, options: Options): TransformResult {
-  validateOptions(options);
-  try {
-    const sucraseContext = getSucraseContext(code, options);
-    const transformer = new RootTransformer(
-      sucraseContext,
-      options.transforms,
-      Boolean(options.enableLegacyBabel5ModuleInterop),
-      options,
-    );
-    const transformerResult = transformer.transform();
-    let result: TransformResult = {code: transformerResult.code};
-    if (options.sourceMapOptions) {
-      if (!options.filePath) {
-        throw new Error("filePath must be specified when generating a source map.");
-      }
-      result = {
-        ...result,
-        sourceMap: computeSourceMap(
-          transformerResult,
-          options.filePath,
-          options.sourceMapOptions,
-          code,
-          sucraseContext.tokenProcessor.tokens,
-        ),
-      };
-    }
-    return result;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (e: any) {
-    if (options.filePath) {
-      e.message = `Error transforming ${options.filePath}: ${e.message}`;
-    }
-    throw e;
-  }
+  return coreTransform(code, coreify(options));
 }
 
 /**
@@ -74,60 +72,6 @@ export function transform(code: string, options: Options): TransformResult {
  * diagnostic purposes.
  */
 export function getFormattedTokens(code: string, options: Options): string {
-  const tokens = getSucraseContext(code, options).tokenProcessor.tokens;
-  return formatTokens(code, tokens);
+  return coreGetFormattedTokens(code, coreify(options));
 }
-
-/**
- * Call into the parser/tokenizer and do some further preprocessing:
- * - Come up with a set of used names so that we can assign new names.
- * - Preprocess all import/export statements so we know which globals we are interested in.
- * - Compute situations where any of those globals are shadowed.
- *
- * In the future, some of these preprocessing steps can be skipped based on what actual work is
- * being done.
- */
-function getSucraseContext(code: string, options: Options): SucraseContext {
-  const isJSXEnabled = options.transforms.includes("jsx");
-  const isTypeScriptEnabled = options.transforms.includes("typescript");
-  const isFlowEnabled = options.transforms.includes("flow");
-  const disableESTransforms = options.disableESTransforms === true;
-  const file = parse(code, isJSXEnabled, isTypeScriptEnabled, isFlowEnabled);
-  const tokens = file.tokens;
-  const scopes = file.scopes;
-
-  const nameManager = new NameManager(code, tokens);
-  const helperManager = new HelperManager(nameManager);
-  const tokenProcessor = new TokenProcessor(
-    code,
-    tokens,
-    isFlowEnabled,
-    disableESTransforms,
-    helperManager,
-  );
-  const enableLegacyTypeScriptModuleInterop = Boolean(options.enableLegacyTypeScriptModuleInterop);
-
-  let importProcessor = null;
-  if (options.transforms.includes("imports")) {
-    importProcessor = new CJSImportProcessor(
-      nameManager,
-      tokenProcessor,
-      enableLegacyTypeScriptModuleInterop,
-      options,
-      options.transforms.includes("typescript"),
-      Boolean(options.keepUnusedImports),
-      helperManager,
-    );
-    importProcessor.preprocessTokens();
-    // We need to mark shadowed globals after processing imports so we know that the globals are,
-    // but before type-only import pruning, since that relies on shadowing information.
-    identifyShadowedGlobals(tokenProcessor, scopes, importProcessor.getGlobalNames());
-    if (options.transforms.includes("typescript") && !options.keepUnusedImports) {
-      importProcessor.pruneTypeOnlyImports();
-    }
-  } else if (options.transforms.includes("typescript") && !options.keepUnusedImports) {
-    // Shadowed global detection is needed for TS implicit elision of imported names.
-    identifyShadowedGlobals(tokenProcessor, scopes, getTSImportedNames(tokenProcessor));
-  }
-  return {tokenProcessor, scopes, nameManager, importProcessor, helperManager};
-}
+export {type SourceMapOptions, type SucraseContext, getVersion};

@@ -1,9 +1,9 @@
-import type NameManager from "../NameManager";
-import type {Token} from "../parser/tokenizer";
-import {ContextualKeyword} from "../parser/tokenizer/keywords";
-import {TokenType as tt} from "../parser/tokenizer/types";
-import type TokenProcessor from "../TokenProcessor";
-import type RootTransformer from "../transformers/RootTransformer";
+import type NameManager from "../NameManager.js";
+import type {Token} from "../parser/tokenizer/index.js";
+import {ContextualKeyword} from "../parser/tokenizer/keywords.js";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
+import type TokenProcessor from "../TokenProcessor.js";
+import type RootTransformer from "../transformers/RootTransformer.js";
 
 export interface ClassHeaderInfo {
   isExpression: boolean;
@@ -49,7 +49,7 @@ export default function getClassInfo(
   rootTransformer: RootTransformer,
   tokens: TokenProcessor,
   nameManager: NameManager,
-  disableESTransforms: boolean,
+  disableClassTransforms: boolean,
 ): ClassInfo {
   const snapshot = tokens.snapshot();
 
@@ -72,7 +72,7 @@ export default function getClassInfo(
     if (tokens.matchesContextual(ContextualKeyword._constructor) && !tokens.currentToken().isType) {
       ({constructorInitializerStatements, constructorInsertPos} = processConstructor(tokens));
     } else if (tokens.matches1(tt.semi)) {
-      if (!disableESTransforms) {
+      if (!disableClassTransforms) {
         rangesToRemove.push({start: tokens.currentIndex(), end: tokens.currentIndex() + 1});
       }
       tokens.nextToken();
@@ -151,7 +151,7 @@ export default function getClassInfo(
           start: nameStartIndex,
           end: tokens.currentIndex(),
         });
-      } else if (!disableESTransforms || isDeclareOrAbstract) {
+      } else if (!disableClassTransforms || isDeclareOrAbstract) {
         // This is a regular field declaration, like `x;`. With the class transform enabled, we just
         // remove the line so that no output is produced. With the class transform disabled, we
         // usually want to preserve the declaration (but still strip types), but if the `declare`
@@ -163,7 +163,7 @@ export default function getClassInfo(
   }
 
   tokens.restoreToSnapshot(snapshot);
-  if (disableESTransforms) {
+  if (disableClassTransforms) {
     // With ES transforms disabled, we don't want to transform regular class
     // field declarations, and we don't need to do any additional tricks to
     // reference the constructor for static init, but we still need to transform

@@ -1,5 +1,5 @@
-import type {Token} from "../parser/tokenizer";
-import {TokenType as tt} from "../parser/tokenizer/types";
+import type {Token} from "../parser/tokenizer/index.js";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
 
 /**
  * Get all identifier names in the code, in order, including duplicates.

@@ -1,21 +1,21 @@
-import type {HelperManager} from "../HelperManager";
-import type {Options} from "../index";
-import type NameManager from "../NameManager";
-import {ContextualKeyword} from "../parser/tokenizer/keywords";
-import {TokenType as tt} from "../parser/tokenizer/types";
-import type TokenProcessor from "../TokenProcessor";
-import elideImportEquals from "../util/elideImportEquals";
+import type {CoreOptions} from "../core.js";
+import type {HelperManager} from "../HelperManager.js";
+import type NameManager from "../NameManager.js";
+import {ContextualKeyword} from "../parser/tokenizer/keywords.js";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
+import type TokenProcessor from "../TokenProcessor.js";
+import elideImportEquals from "../util/elideImportEquals.js";
 import getDeclarationInfo, {
   type DeclarationInfo,
   EMPTY_DECLARATION_INFO,
-} from "../util/getDeclarationInfo";
-import getImportExportSpecifierInfo from "../util/getImportExportSpecifierInfo";
-import {getNonTypeIdentifiers} from "../util/getNonTypeIdentifiers";
-import isExportFrom from "../util/isExportFrom";
-import {removeMaybeImportAttributes} from "../util/removeMaybeImportAttributes";
-import shouldElideDefaultExport from "../util/shouldElideDefaultExport";
-import type ReactHotLoaderTransformer from "./ReactHotLoaderTransformer";
-import Transformer from "./Transformer";
+} from "../util/getDeclarationInfo.js";
+import getImportExportSpecifierInfo from "../util/getImportExportSpecifierInfo.js";
+import {getNonTypeIdentifiers} from "../util/getNonTypeIdentifiers.js";
+import isExportFrom from "../util/isExportFrom.js";
+import {removeMaybeImportAttributes} from "../util/removeMaybeImportAttributes.js";
+import shouldElideDefaultExport from "../util/shouldElideDefaultExport.js";
+import type ReactHotLoaderTransformer from "./ReactHotLoaderTransformer.js";
+import Transformer from "./Transformer.js";
 
 /**
  * Class for editing import statements when we are keeping the code as ESM. We still need to remove
@@ -34,7 +34,7 @@ export default class ESMImportTransformer extends Transformer {
     readonly isTypeScriptTransformEnabled: boolean,
     readonly isFlowTransformEnabled: boolean,
     readonly keepUnusedImports: boolean,
-    options: Options,
+    options: CoreOptions,
   ) {
     super();
     this.nonTypeIdentifiers =

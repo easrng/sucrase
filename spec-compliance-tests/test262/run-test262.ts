@@ -1,10 +1,13 @@
-#!./node_modules/.bin/sucrase-node
+#!./node_modules/.bin/tsx
 /* eslint-disable no-console */
 import chalk from "chalk";
-import {exec} from "mz/child_process";
-import {exists} from "mz/fs";
+import {exec as exec_} from "child_process";
+import {promisify} from "util";
 
-import run from "../../script/run";
+import run from "../../script/run.js";
+import {exists} from "../../src/util/exists.js";
+
+const exec = promisify(exec_);
 
 const TEST262_HARNESS = "./node_modules/.bin/test262-harness";
 const TEST262_DIR = "./spec-compliance-tests/test262/test262-checkout";
@@ -47,11 +50,11 @@ async function main(): Promise<void> {
   console.log("Running test262...");
   const harnessStdout = (
     await exec(`${TEST262_HARNESS} \
-    --preprocessor "./spec-compliance-tests/test262/test262Preprocessor.js" \
+    --preprocessor "./spec-compliance-tests/test262/test262Preprocessor.cjs" \
     --reporter "json" \
     "${TEST262_DIR}/test/language/expressions/coalesce/**/*.js" \
     "${TEST262_DIR}/test/language/expressions/optional-chaining/**/*.js"`)
-  )[0].toString();
+  ).stdout;
 
   const harnessOutput = JSON.parse(harnessStdout);
   let numPassed = 0;

@@ -1,6 +1,6 @@
 /* eslint max-len: 0 */
 
-import {File} from "../index";
+import {File} from "../index.js";
 import {
   flowAfterParseClassSuper,
   flowAfterParseVarHead,
@@ -17,7 +17,7 @@ import {
   flowStartParseImportSpecifiers,
   flowTryParseExportDefaultExpression,
   flowTryParseStatement,
-} from "../plugins/flow";
+} from "../plugins/flow.js";
 import {
   tsAfterParseClassSuper,
   tsAfterParseVarHead,
@@ -36,7 +36,7 @@ import {
   tsTryParseStatementContent,
   tsTryParseTypeAnnotation,
   tsTryParseTypeParameters,
-} from "../plugins/typescript";
+} from "../plugins/typescript.js";
 import {
   eat,
   eatTypeToken,
@@ -49,12 +49,12 @@ import {
   nextTokenStartSince,
   popTypeContext,
   pushTypeContext,
-} from "../tokenizer";
-import {ContextualKeyword} from "../tokenizer/keywords";
-import {Scope} from "../tokenizer/state";
-import {type TokenType, TokenType as tt} from "../tokenizer/types";
-import {charCodes} from "../util/charcodes";
-import {getNextContextId, input, isFlowEnabled, isTypeScriptEnabled, state} from "./base";
+} from "../tokenizer/index.js";
+import {ContextualKeyword} from "../tokenizer/keywords.js";
+import {Scope} from "../tokenizer/state.js";
+import {type TokenType, TokenType as tt} from "../tokenizer/types.js";
+import {charCodes} from "../util/charcodes.js";
+import {getNextContextId, input, isFlowEnabled, isTypeScriptEnabled, state} from "./base.js";
 import {
   parseCallExpressionArguments,
   parseExprAtom,
@@ -67,13 +67,13 @@ import {
   parseObj,
   parseParenExpression,
   parsePropertyName,
-} from "./expression";
+} from "./expression.js";
 import {
   parseBindingAtom,
   parseBindingIdentifier,
   parseBindingList,
   parseImportedIdentifier,
-} from "./lval";
+} from "./lval.js";
 import {
   canInsertSemicolon,
   eatContextual,
@@ -86,7 +86,7 @@ import {
   isLookaheadContextual,
   semicolon,
   unexpected,
-} from "./util";
+} from "./util.js";
 
 export function parseTopLevel(): File {
   parseBlockBody(tt.eof);

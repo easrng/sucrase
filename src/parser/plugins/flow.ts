@@ -9,10 +9,10 @@ import {
   popTypeContext,
   pushTypeContext,
   type TypeAndKeyword,
-} from "../tokenizer/index";
-import {ContextualKeyword} from "../tokenizer/keywords";
-import {TokenType, TokenType as tt} from "../tokenizer/types";
-import {input, state} from "../traverser/base";
+} from "../tokenizer/index.js";
+import {ContextualKeyword} from "../tokenizer/keywords.js";
+import {TokenType, TokenType as tt} from "../tokenizer/types.js";
+import {input, state} from "../traverser/base.js";
 import {
   baseParseMaybeAssign,
   baseParseSubscript,
@@ -26,7 +26,7 @@ import {
   parseIdentifier,
   parseLiteral,
   type StopState,
-} from "../traverser/expression";
+} from "../traverser/expression.js";
 import {
   baseParseExportStar,
   parseExport,
@@ -35,7 +35,7 @@ import {
   parseFunctionParams,
   parseImport,
   parseStatement,
-} from "../traverser/statement";
+} from "../traverser/statement.js";
 import {
   canInsertSemicolon,
   eatContextual,
@@ -45,7 +45,7 @@ import {
   isLookaheadContextual,
   semicolon,
   unexpected,
-} from "../traverser/util";
+} from "../traverser/util.js";
 
 function isMaybeDefaultImport(lookahead: TypeAndKeyword): boolean {
   return (

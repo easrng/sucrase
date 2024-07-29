@@ -1,16 +1,20 @@
-#!./node_modules/.bin/sucrase-node
+#!./node_modules/.bin/tsx
 /* eslint-disable no-console */
 // @ts-ignore: babel-core package missing types.
 import * as babel from "@babel/core";
 import * as swc from "@swc/core";
 import * as esbuild from "esbuild";
-import {fs} from "mz";
-import {exists} from "mz/fs";
-import * as TypeScript from "typescript";
+import fs from "fs/promises";
+import {dirname} from "path";
+import TypeScript from "typescript";
+import {fileURLToPath} from "url";
 
-import run from "../script/run";
-import * as sucrase from "../src/index";
-import {type FileInfo, loadProjectFiles} from "./loadProjectFiles";
+import run from "../script/run.js";
+import * as sucrase from "../src/index.js";
+import {exists} from "../src/util/exists.js";
+import {type FileInfo, loadProjectFiles} from "./loadProjectFiles.js";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 async function main(): Promise<void> {
   process.chdir(__dirname);
@@ -149,7 +153,7 @@ async function benchmarkProject(): Promise<void> {
  * representative of typical code.
  */
 async function benchmarkSample(): Promise<void> {
-  const code = fs.readFileSync(`./sample/sample.tsx`).toString();
+  const code = await fs.readFile(`./sample/sample.tsx`, "utf-8");
   await benchmarkFiles({files: [{code, path: "sample.tsx"}], numIterations: 100, warmUp: true});
 }
 

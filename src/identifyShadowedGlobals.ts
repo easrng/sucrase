@@ -2,10 +2,10 @@ import {
   isBlockScopedDeclaration,
   isFunctionScopedDeclaration,
   isNonTopLevelDeclaration,
-} from "./parser/tokenizer";
-import type {Scope} from "./parser/tokenizer/state";
-import {TokenType as tt} from "./parser/tokenizer/types";
-import type TokenProcessor from "./TokenProcessor";
+} from "./parser/tokenizer/index.js";
+import type {Scope} from "./parser/tokenizer/state.js";
+import {TokenType as tt} from "./parser/tokenizer/types.js";
+import type TokenProcessor from "./TokenProcessor.js";
 
 /**
  * Traverse the given tokens and modify them if necessary to indicate that some names shadow global

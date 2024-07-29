@@ -1,1 +1,1 @@
-require("../dist/register").registerJSX();
+require("../dist/cjs/register").registerJSX();

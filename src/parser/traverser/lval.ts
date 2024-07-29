@@ -1,5 +1,5 @@
-import {flowParseAssignableListItemTypes} from "../plugins/flow";
-import {tsParseAssignableListItemTypes, tsParseModifiers} from "../plugins/typescript";
+import {flowParseAssignableListItemTypes} from "../plugins/flow.js";
+import {tsParseAssignableListItemTypes, tsParseModifiers} from "../plugins/typescript.js";
 import {
   eat,
   IdentifierRole,
@@ -7,12 +7,12 @@ import {
   next,
   popTypeContext,
   pushTypeContext,
-} from "../tokenizer/index";
-import {ContextualKeyword} from "../tokenizer/keywords";
-import {TokenType, TokenType as tt} from "../tokenizer/types";
-import {isFlowEnabled, isTypeScriptEnabled, state} from "./base";
-import {parseIdentifier, parseMaybeAssign, parseObj} from "./expression";
-import {expect, unexpected} from "./util";
+} from "../tokenizer/index.js";
+import {ContextualKeyword} from "../tokenizer/keywords.js";
+import {TokenType, TokenType as tt} from "../tokenizer/types.js";
+import {isFlowEnabled, isTypeScriptEnabled, state} from "./base.js";
+import {parseIdentifier, parseMaybeAssign, parseObj} from "./expression.js";
+import {expect, unexpected} from "./util.js";
 
 export function parseSpread(): void {
   next();

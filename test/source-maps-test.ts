@@ -6,7 +6,7 @@ import {
 } from "@jridgewell/trace-mapping";
 import * as assert from "assert";
 
-import {transform} from "../src";
+import {transform} from "../src/index.js";
 
 describe("source maps", () => {
   it("generates a detailed line-based source map", () => {

@@ -1,5 +1,5 @@
-import State from "../tokenizer/state";
-import {charCodes} from "../util/charcodes";
+import State from "../tokenizer/state.js";
+import {charCodes} from "../util/charcodes.js";
 
 export let isJSXEnabled: boolean;
 export let isTypeScriptEnabled: boolean;

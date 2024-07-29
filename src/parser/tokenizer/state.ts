@@ -1,6 +1,6 @@
-import type {Token} from "./index";
-import {ContextualKeyword} from "./keywords";
-import {type TokenType, TokenType as tt} from "./types";
+import type {Token} from "./index.js";
+import {ContextualKeyword} from "./keywords.js";
+import {type TokenType, TokenType as tt} from "./types.js";
 
 export class Scope {
   startTokenIndex: number;

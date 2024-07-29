@@ -2,7 +2,7 @@ import type {TransformOptions} from "@jest/transform";
 import {extname} from "path";
 import {type Transform, transform} from "sucrase";
 
-import type {Options} from "../../../src/Options";
+import type {Options} from "../../../src/index";
 
 function getTransforms(filename: string, supportsStaticESM: boolean): Array<Transform> | null {
   const extension = extname(filename);

@@ -1,6 +1,6 @@
-import {TokenType as tt} from "../parser/tokenizer/types";
-import type TokenProcessor from "../TokenProcessor";
-import type {DeclarationInfo} from "./getDeclarationInfo";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
+import type TokenProcessor from "../TokenProcessor.js";
+import type {DeclarationInfo} from "./getDeclarationInfo.js";
 
 /**
  * Common method sharing code between CJS and ESM cases, since they're the same here.

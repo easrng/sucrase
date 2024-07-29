@@ -1,5 +1,5 @@
-import {ContextualKeyword} from "../parser/tokenizer/keywords";
-import type TokenProcessor from "../TokenProcessor";
+import {ContextualKeyword} from "../parser/tokenizer/keywords.js";
+import type TokenProcessor from "../TokenProcessor.js";
 
 /**
  * Determine whether this optional chain or nullish coalescing operation has any await statements in

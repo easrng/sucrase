@@ -1,10 +1,10 @@
-#!./node_modules/.bin/sucrase-node
+#!./node_modules/.bin/tsx
 /* eslint-disable no-console */
-import {writeFile} from "mz/fs";
+import {writeFile} from "fs/promises";
 
-import run from "../script/run";
-import generateReadWordTree from "./generateReadWordTree";
-import generateTokenTypes from "./generateTokenTypes";
+import run from "../script/run.js";
+import generateReadWordTree from "./generateReadWordTree.js";
+import generateTokenTypes from "./generateTokenTypes.js";
 
 /**
  * Use code generation.
@@ -14,8 +14,6 @@ async function generate(): Promise<void> {
   await run("./node_modules/.bin/prettier --write ./src/parser/tokenizer/types.ts");
   await writeFile("./src/parser/tokenizer/readWordTree.ts", generateReadWordTree());
   await run("./node_modules/.bin/prettier --write ./src/parser/tokenizer/readWordTree.ts");
-  await run("./node_modules/.bin/ts-interface-builder src/Options.ts --suffix -gen-types");
-  await run("./node_modules/.bin/prettier --write ./src/Options-gen-types.ts");
   console.log("Done with code generation.");
 }
 

@@ -1,4 +1,4 @@
-import type {Options} from "../index";
+import type {CoreOptions} from "../core.js";
 
 export interface JSXPragmaInfo {
   base: string;
@@ -7,7 +7,7 @@ export interface JSXPragmaInfo {
   fragmentSuffix: string;
 }
 
-export default function getJSXPragmaInfo(options: Options): JSXPragmaInfo {
+export default function getJSXPragmaInfo(options: CoreOptions): JSXPragmaInfo {
   const [base, suffix] = splitPragma(options.jsxPragma || "React.createElement");
   const [fragmentBase, fragmentSuffix] = splitPragma(options.jsxFragmentPragma || "React.Fragment");
   return {base, suffix, fragmentBase, fragmentSuffix};

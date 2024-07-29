@@ -1,9 +1,9 @@
 import {throws} from "assert";
 
-import {transform, type Options} from "../src";
-import {IMPORT_DEFAULT_PREFIX, JSX_PREFIX} from "./prefixes";
-import * as util from "./util";
-import {assertResult, jsxDevArgs} from "./util";
+import {transform, type Options} from "../src/index.js";
+import {IMPORT_DEFAULT_PREFIX, JSX_PREFIX} from "./prefixes.js";
+import * as util from "./util.js";
+import {assertResult, jsxDevArgs} from "./util.js";
 
 const {devProps} = util;
 

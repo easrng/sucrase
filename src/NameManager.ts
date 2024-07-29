@@ -1,5 +1,5 @@
-import type {Token} from "./parser/tokenizer";
-import getIdentifierNames from "./util/getIdentifierNames";
+import type {Token} from "./parser/tokenizer/index.js";
+import getIdentifierNames from "./util/getIdentifierNames.js";
 
 export default class NameManager {
   private readonly usedNames: Set<string> = new Set();

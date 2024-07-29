@@ -1,4 +1,5 @@
-const sucrase = require("../..");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const sucrase = require("../../dist/cjs/index.js");
 
 /**
  * test262-harness preprocessor documented here:

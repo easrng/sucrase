@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import * as fs from "fs";
 
-import * as sucrase from "../src/index";
+import * as sucrase from "../src/index.js";
 
 function main(): void {
   const sampleFile = process.argv[2] || "sample.tsx";

@@ -1,8 +1,8 @@
 diff --git a/package.json b/package.json
-index 826ad87f..1ac6cee3 100644
+index 826ad87f..174cd61b 100644
 --- a/package.json
 +++ b/package.json
-@@ -22,14 +22,14 @@
+@@ -22,15 +22,15 @@
      "clean:test": "rimraf build && rimraf test/config/node_modules",
      "docs": "node scripts/buildDocs.js",
      "compile": "npm-run-all -p compile:core compile:test -s compile:scripts",
@@ -17,12 +17,14 @@ index 826ad87f..1ac6cee3 100644
      "lint:from-bin": "node bin/tslint --project test/tsconfig.json --format stylish",
      "publish:local": "./scripts/npmPublish.sh",
 -    "test": "npm-run-all test:pre -p test:mocha test:rules",
+-    "test:pre": "cd ./test/config && npm install --no-save",
 +    "test": "npm-run-all compile test:pre -p test:mocha test:rules",
-     "test:pre": "cd ./test/config && npm install --no-save",
++    "test:pre": "cd ./test/config && yarn",
      "test:mocha": "mocha --reporter spec --colors \"build/test/**/*Tests.js\"",
      "test:rules": "node ./build/test/ruleTestRunner.js",
+     "verify": "npm-run-all clean compile lint test docs",
 diff --git a/test/executable/executableTests.ts b/test/executable/executableTests.ts
-index a5affd2b..c5481e45 100644
+index a5affd2b..aafc5dc0 100644
 --- a/test/executable/executableTests.ts
 +++ b/test/executable/executableTests.ts
 @@ -141,6 +141,7 @@ describe("Executable", function(this: Mocha.ISuiteCallbackContext) {
@@ -33,6 +35,22 @@ index a5affd2b..c5481e45 100644
                      assert.isNotNull(err, "process should exit with error");
                      assert.strictEqual(err.code, 2, "error code should be 2");
                      assert.include(stdout, "hello from custom formatter", "stdout should contain output of custom formatter");
+@@ -181,13 +182,13 @@ describe("Executable", function(this: Mocha.ISuiteCallbackContext) {
+             assert.equal(status, Status.LintError, "error code should be 2");
+         });
+ 
+-        it("are compiled just in time when using ts-node", (done) => {
++        it("are compiled just in time when using sucrase", (done) => {
+             execCli(
+                 ["-c", "./test/config/tslint-custom-rules-uncompiled.json", "src/test.ts"],
+                 {
+                     env: {
+                         ...process.env, // tslint:disable-line:no-unsafe-any
+-                        NODE_OPTIONS: "-r ts-node/register",
++                        NODE_OPTIONS: "-r sucrase/register",
+                         TS_NODE_CACHE: "0",
+                         TS_NODE_FAST: "1",
+                     },
 diff --git a/test/files/custom-rules/alwaysFailRule.js b/test/files/custom-rules/alwaysFailRule.js
 index 4f1b0bf7..049d4f31 100644
 --- a/test/files/custom-rules/alwaysFailRule.js
@@ -71,29 +89,5 @@ index 4f1b0bf7..049d4f31 100644
 -    };
 -    return AlwaysFailWalker;
 -})(Lint.RuleWalker);
-+    }
-+}
-diff --git a/tsconfig.json b/tsconfig.json
-new file mode 100644
-index 00000000..60dc8db4
---- /dev/null
-+++ b/tsconfig.json
-@@ -0,0 +1,18 @@
-+{
-+    "compilerOptions": {
-+        "module": "commonjs",
-+        "noImplicitAny": true,
-+        "noImplicitReturns": true,
-+        "noImplicitThis": true,
-+        "noUnusedParameters": true,
-+        "noUnusedLocals": true,
-+        "strictNullChecks": true,
-+        "strictFunctionTypes": true,
-+        "importHelpers": true,
-+        "declaration": true,
-+        "sourceMap": false,
-+        "target": "es2017",
-+        "lib": ["es6"],
-+        "outDir": "../lib"
 +    }
 +}

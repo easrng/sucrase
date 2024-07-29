@@ -8,14 +8,14 @@ import {
   next,
   skipSpace,
   Token,
-} from "../../tokenizer/index";
-import {TokenType as tt} from "../../tokenizer/types";
-import {input, isTypeScriptEnabled, state} from "../../traverser/base";
-import {parseExpression, parseMaybeAssign} from "../../traverser/expression";
-import {expect, unexpected} from "../../traverser/util";
-import {charCodes} from "../../util/charcodes";
-import {IS_IDENTIFIER_CHAR, IS_IDENTIFIER_START} from "../../util/identifier";
-import {tsTryParseJSXTypeArgument} from "../typescript";
+} from "../../tokenizer/index.js";
+import {TokenType as tt} from "../../tokenizer/types.js";
+import {input, isTypeScriptEnabled, state} from "../../traverser/base.js";
+import {parseExpression, parseMaybeAssign} from "../../traverser/expression.js";
+import {expect, unexpected} from "../../traverser/util.js";
+import {charCodes} from "../../util/charcodes.js";
+import {IS_IDENTIFIER_CHAR, IS_IDENTIFIER_START} from "../../util/identifier.js";
+import {tsTryParseJSXTypeArgument} from "../typescript.js";
 
 /**
  * Read token with JSX contents.

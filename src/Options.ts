@@ -1,10 +1,30 @@
-import {createCheckers} from "ts-interface-checker";
+import type CJSImportTransformer from "./transformers/CJSImportTransformer.js";
+import type ESMImportTransformer from "./transformers/ESMImportTransformer.js";
+import type FlowTransformer from "./transformers/FlowTransformer.js";
+import type JestHoistTransformer from "./transformers/JestHoistTransformer.js";
+import type JSXTransformer from "./transformers/JSXTransformer.js";
+import type NumericSeparatorTransformer from "./transformers/NumericSeparatorTransformer.js";
+import type OptionalCatchBindingTransformer from "./transformers/OptionalCatchBindingTransformer.js";
+import type OptionalChainingNullishTransformer from "./transformers/OptionalChainingNullishTransformer.js";
+import type ReactDisplayNameTransformer from "./transformers/ReactDisplayNameTransformer.js";
+import type ReactHotLoaderTransformer from "./transformers/ReactHotLoaderTransformer.js";
+import type TypeScriptTransformer from "./transformers/TypeScriptTransformer.js";
 
-import OptionsGenTypes from "./Options-gen-types";
-
-const {Options: OptionsChecker} = createCheckers(OptionsGenTypes);
-
-export type Transform = "jsx" | "typescript" | "flow" | "imports" | "react-hot-loader" | "jest";
+export type Transformers = (
+  | {CJSImportTransformer: typeof CJSImportTransformer; ESMImportTransformer?: undefined}
+  | {ESMImportTransformer: typeof ESMImportTransformer; CJSImportTransformer?: undefined}
+) & {
+  FlowTransformer?: typeof FlowTransformer;
+  JestHoistTransformer?: typeof JestHoistTransformer;
+  JSXTransformer?: typeof JSXTransformer;
+  NumericSeparatorTransformer?: typeof NumericSeparatorTransformer;
+  OptionalCatchBindingTransformer?: typeof OptionalCatchBindingTransformer;
+  OptionalChainingNullishTransformer?: typeof OptionalChainingNullishTransformer;
+  ReactDisplayNameTransformer?: typeof ReactDisplayNameTransformer;
+  ReactHotLoaderTransformer?: typeof ReactHotLoaderTransformer;
+  TypeScriptTransformer?: typeof TypeScriptTransformer;
+  ClassTransformer?: true;
+};
 
 export interface SourceMapOptions {
   /**
@@ -14,17 +34,8 @@ export interface SourceMapOptions {
   compiledFilename: string;
 }
 
-export interface Options {
-  /**
-   * Unordered array of transform names describing both the allowed syntax
-   * (where applicable) and the transformation behavior.
-   */
-  transforms: Array<Transform>;
-  /**
-   * Opts out of all ES syntax transformations: optional chaining, nullish
-   * coalescing, class fields, numeric separators, optional catch binding.
-   */
-  disableESTransforms?: boolean;
+export interface CoreOptions {
+  transformers: Transformers;
   /**
    * Transformation mode for the JSX transform.
    * - "classic" refers to the original behavior using `React.createElement`.
@@ -94,8 +105,4 @@ export interface Options {
    * File path to use in error messages, React display names, and source maps.
    */
   filePath?: string;
-}
-
-export function validateOptions(options: Options): void {
-  OptionsChecker.strictCheck(options);
 }

@@ -1,5 +1,5 @@
-import {ESMODULE_PREFIX, IMPORT_DEFAULT_PREFIX, JSX_PREFIX} from "./prefixes";
-import {assertResult, devProps} from "./util";
+import {ESMODULE_PREFIX, IMPORT_DEFAULT_PREFIX, JSX_PREFIX} from "./prefixes.js";
+import {assertResult, devProps} from "./util.js";
 
 describe("transform react-display-name", () => {
   it("adds displayName to a React.createClass usage", () => {

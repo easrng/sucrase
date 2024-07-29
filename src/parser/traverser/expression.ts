@@ -28,9 +28,9 @@ import {
   flowStartParseAsyncArrowFromCallExpression,
   flowStartParseNewArguments,
   flowStartParseObjPropValue,
-} from "../plugins/flow";
-import {jsxParseElement} from "../plugins/jsx/index";
-import {typedParseConditional, typedParseParenItem} from "../plugins/types";
+} from "../plugins/flow.js";
+import {jsxParseElement} from "../plugins/jsx/index.js";
+import {typedParseConditional, typedParseParenItem} from "../plugins/types.js";
 import {
   tsParseArrow,
   tsParseFunctionBodyAndFinish,
@@ -40,7 +40,7 @@ import {
   tsParseTypeAssertion,
   tsStartParseAsyncArrowFromCallExpression,
   tsStartParseObjPropValue,
-} from "../plugins/typescript";
+} from "../plugins/typescript.js";
 import {
   eat,
   IdentifierRole,
@@ -53,20 +53,20 @@ import {
   pushTypeContext,
   rescan_gt,
   retokenizeSlashAsRegex,
-} from "../tokenizer/index";
-import {ContextualKeyword} from "../tokenizer/keywords";
-import {Scope} from "../tokenizer/state";
-import {TokenType, TokenType as tt} from "../tokenizer/types";
-import {charCodes} from "../util/charcodes";
-import {IS_IDENTIFIER_START} from "../util/identifier";
-import {getNextContextId, isFlowEnabled, isJSXEnabled, isTypeScriptEnabled, state} from "./base";
+} from "../tokenizer/index.js";
+import {ContextualKeyword} from "../tokenizer/keywords.js";
+import {Scope} from "../tokenizer/state.js";
+import {TokenType, TokenType as tt} from "../tokenizer/types.js";
+import {charCodes} from "../util/charcodes.js";
+import {IS_IDENTIFIER_START} from "../util/identifier.js";
+import {getNextContextId, isFlowEnabled, isJSXEnabled, isTypeScriptEnabled, state} from "./base.js";
 import {
   markPriorBindingIdentifier,
   parseBindingIdentifier,
   parseMaybeDefault,
   parseRest,
   parseSpread,
-} from "./lval";
+} from "./lval.js";
 import {
   parseBlock,
   parseBlockBody,
@@ -74,7 +74,7 @@ import {
   parseDecorators,
   parseFunction,
   parseFunctionParams,
-} from "./statement";
+} from "./statement.js";
 import {
   canInsertSemicolon,
   eatContextual,
@@ -84,7 +84,7 @@ import {
   hasPrecedingLineBreak,
   isContextual,
   unexpected,
-} from "./util";
+} from "./util.js";
 
 export class StopState {
   stop: boolean;

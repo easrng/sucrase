@@ -1,6 +1,6 @@
-import {ContextualKeyword} from "../parser/tokenizer/keywords";
-import {TokenType as tt} from "../parser/tokenizer/types";
-import type TokenProcessor from "../TokenProcessor";
+import {ContextualKeyword} from "../parser/tokenizer/keywords.js";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
+import type TokenProcessor from "../TokenProcessor.js";
 
 /**
  * Starting at a potential `with` or (legacy) `assert` token, remove the import

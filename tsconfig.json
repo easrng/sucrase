@@ -4,13 +4,14 @@
     // options.
     "strict": true,
     "target": "es2020",
-    "module": "commonjs",
+    "module": "NodeNext",
     "isolatedModules": true,
     "esModuleInterop": true,
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
-    "lib": ["es2020", "dom"]
+    "lib": ["es2020", "dom"],
+    "noEmit": true
   },
   "include": [
     "benchmark",
@@ -20,7 +21,7 @@
     "script",
     "spec-compliance-tests",
     "src",
-    "test",
+    "test"
   ],
   "exclude": [
     "benchmark/sample",

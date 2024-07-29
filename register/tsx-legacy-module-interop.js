@@ -1,1 +1,1 @@
-require("../dist/register").registerTSXLegacyModuleInterop();
+require("../dist/cjs/register").registerTSXLegacyModuleInterop();

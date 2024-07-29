@@ -1,9 +1,9 @@
-import {input, state} from "../traverser/base";
-import {charCodes} from "../util/charcodes";
-import {IS_IDENTIFIER_CHAR} from "../util/identifier";
-import {finishToken} from "./index";
-import {READ_WORD_TREE} from "./readWordTree";
-import {TokenType as tt} from "./types";
+import {input, state} from "../traverser/base.js";
+import {charCodes} from "../util/charcodes.js";
+import {IS_IDENTIFIER_CHAR} from "../util/identifier.js";
+import {finishToken} from "./index.js";
+import {READ_WORD_TREE} from "./readWordTree.js";
+import {TokenType as tt} from "./types.js";
 
 /**
  * Read an identifier, producing either a name token or matching on one of the existing keywords.

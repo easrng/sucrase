@@ -1,10 +1,10 @@
-import type CJSImportProcessor from "../CJSImportProcessor";
-import type {Options} from "../index";
-import {IdentifierRole} from "../parser/tokenizer";
-import {TokenType as tt} from "../parser/tokenizer/types";
-import type TokenProcessor from "../TokenProcessor";
-import type RootTransformer from "./RootTransformer";
-import Transformer from "./Transformer";
+import type CJSImportProcessor from "../CJSImportProcessor.js";
+import type {CoreOptions} from "../core.js";
+import {IdentifierRole} from "../parser/tokenizer/index.js";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
+import type TokenProcessor from "../TokenProcessor.js";
+import type RootTransformer from "./RootTransformer.js";
+import Transformer from "./Transformer.js";
 
 /**
  * Implementation of babel-plugin-transform-react-display-name, which adds a
@@ -15,7 +15,7 @@ export default class ReactDisplayNameTransformer extends Transformer {
     readonly rootTransformer: RootTransformer,
     readonly tokens: TokenProcessor,
     readonly importProcessor: CJSImportProcessor | null,
-    readonly options: Options,
+    readonly options: CoreOptions,
   ) {
     super();
   }

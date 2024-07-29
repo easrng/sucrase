@@ -1,7 +1,7 @@
-import type NameManager from "../NameManager";
-import {TokenType as tt} from "../parser/tokenizer/types";
-import type TokenProcessor from "../TokenProcessor";
-import Transformer from "./Transformer";
+import type NameManager from "../NameManager.js";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
+import type TokenProcessor from "../TokenProcessor.js";
+import Transformer from "./Transformer.js";
 
 export default class OptionalCatchBindingTransformer extends Transformer {
   constructor(readonly tokens: TokenProcessor, readonly nameManager: NameManager) {

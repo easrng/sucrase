@@ -1,6 +1,6 @@
-import {TokenType as tt} from "../parser/tokenizer/types";
-import type TokenProcessor from "../TokenProcessor";
-import Transformer from "./Transformer";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
+import type TokenProcessor from "../TokenProcessor.js";
+import Transformer from "./Transformer.js";
 
 export default class NumericSeparatorTransformer extends Transformer {
   constructor(readonly tokens: TokenProcessor) {

@@ -7,8 +7,8 @@ import {
   NULLISH_COALESCE_PREFIX,
   OPTIONAL_CHAIN_DELETE_PREFIX,
   OPTIONAL_CHAIN_PREFIX,
-} from "./prefixes";
-import {assertOutput, assertResult} from "./util";
+} from "./prefixes.js";
+import {assertOutput, assertResult} from "./util.js";
 
 /**
  * Test cases that aren't associated with any particular transform.

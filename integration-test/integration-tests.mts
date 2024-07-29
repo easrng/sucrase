@@ -3,15 +3,17 @@ import {exec} from "child_process";
 import {readdirSync, statSync} from "fs";
 import {rm, writeFile} from "fs/promises";
 import {join, dirname, resolve, basename} from "path";
+import {fileURLToPath} from "url";
 import {promisify} from "util";
 
 import {
   readFileContents,
   readJSONFileContents,
   readJSONFileContentsIfExists,
-} from "../script/util/readFileContents";
-import assertDirectoriesEqual from "./util/assertDirectoriesEqual";
+} from "../script/util/readFileContents.js";
+import assertDirectoriesEqual from "./util/assertDirectoriesEqual.mjs";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const execPromise = promisify(exec);
 
 describe("integration tests", () => {

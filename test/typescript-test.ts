@@ -1,4 +1,4 @@
-import type {Options} from "../src/Options";
+import type {Options} from "../src/index.js";
 import {
   CREATE_NAMED_EXPORT_FROM_PREFIX,
   CREATE_REQUIRE_PREFIX,
@@ -9,8 +9,8 @@ import {
   JSX_PREFIX,
   NULLISH_COALESCE_PREFIX,
   OPTIONAL_CHAIN_PREFIX,
-} from "./prefixes";
-import {assertResult, devProps} from "./util";
+} from "./prefixes.js";
+import {assertResult, devProps} from "./util.js";
 
 function assertTypeScriptResult(
   code: string,

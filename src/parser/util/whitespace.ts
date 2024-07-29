@@ -1,4 +1,4 @@
-import {charCodes} from "./charcodes";
+import {charCodes} from "./charcodes.js";
 
 // https://tc39.github.io/ecma262/#sec-white-space
 export const WHITESPACE_CHARS: Array<number> = [

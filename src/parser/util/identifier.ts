@@ -1,5 +1,5 @@
-import {charCodes} from "./charcodes";
-import {WHITESPACE_CHARS} from "./whitespace";
+import {charCodes} from "./charcodes.js";
+import {WHITESPACE_CHARS} from "./whitespace.js";
 
 function computeIsIdentifierChar(code: number): boolean {
   if (code < 48) return code === 36;

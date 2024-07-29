@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
 import commander from "commander";
+import {mkdir, readdir, readFile, stat, writeFile} from "fs/promises";
 import {glob} from "glob";
-import {exists, mkdir, readdir, readFile, stat, writeFile} from "mz/fs";
 import {dirname, join, relative} from "path";
 
-import {type Options, transform} from "./index";
+import {type Options, transform} from "./index.js";
+import {exists} from "./util/exists.js";
 
 interface CLIOptions {
   outDirPath: string;

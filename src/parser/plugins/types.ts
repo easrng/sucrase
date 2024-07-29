@@ -1,9 +1,9 @@
-import {eatTypeToken, lookaheadType, match} from "../tokenizer/index";
-import {TokenType as tt} from "../tokenizer/types";
-import {isFlowEnabled, isTypeScriptEnabled} from "../traverser/base";
-import {baseParseConditional} from "../traverser/expression";
-import {flowParseTypeAnnotation} from "./flow";
-import {tsParseTypeAnnotation} from "./typescript";
+import {eatTypeToken, lookaheadType, match} from "../tokenizer/index.js";
+import {TokenType as tt} from "../tokenizer/types.js";
+import {isFlowEnabled, isTypeScriptEnabled} from "../traverser/base.js";
+import {baseParseConditional} from "../traverser/expression.js";
+import {flowParseTypeAnnotation} from "./flow.js";
+import {tsParseTypeAnnotation} from "./typescript.js";
 
 /**
  * Common parser code for TypeScript and Flow.

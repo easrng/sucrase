@@ -1,7 +1,7 @@
-import type {Token} from "./tokenizer/index";
-import type {Scope} from "./tokenizer/state";
-import {augmentError, initParser, state} from "./traverser/base";
-import {parseFile} from "./traverser/index";
+import type {Token} from "./tokenizer/index.js";
+import type {Scope} from "./tokenizer/state.js";
+import {augmentError, initParser, state} from "./traverser/base.js";
+import {parseFile} from "./traverser/index.js";
 
 export class File {
   tokens: Array<Token>;

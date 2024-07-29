@@ -1,8 +1,14 @@
-import {eat, finishToken, lookaheadTypeAndKeyword, match, nextTokenStart} from "../tokenizer/index";
-import type {ContextualKeyword} from "../tokenizer/keywords";
-import {formatTokenType, type TokenType, TokenType as tt} from "../tokenizer/types";
-import {charCodes} from "../util/charcodes";
-import {input, state} from "./base";
+import {
+  eat,
+  finishToken,
+  lookaheadTypeAndKeyword,
+  match,
+  nextTokenStart,
+} from "../tokenizer/index.js";
+import type {ContextualKeyword} from "../tokenizer/keywords.js";
+import {formatTokenType, type TokenType, TokenType as tt} from "../tokenizer/types.js";
+import {charCodes} from "../util/charcodes.js";
+import {input, state} from "./base.js";
 
 // ## Parser utilities
 

@@ -1,12 +1,13 @@
 /* eslint-disable no-console */
 // @ts-ignore: Babel package missing types.
 import * as babel from "@babel/core";
-import {exists, readdir, readFile, stat} from "mz/fs";
+import {readdir, readFile, stat} from "fs/promises";
 import {join, relative, resolve} from "path";
 
-import run from "../../script/run";
-import {readFileContents, readJSONFileContents} from "../../script/util/readFileContents";
-import {transform, type Transform} from "../../src";
+import run from "../../script/run.js";
+import {readFileContents, readJSONFileContents} from "../../script/util/readFileContents.js";
+import {transform, type Transform} from "../../src/index.js";
+import {exists} from "../../src/util/exists.js";
 
 const BABEL_TESTS_DIR = "./spec-compliance-tests/babel-tests/babel-tests-checkout";
 const FIXTURES_DIR = `${BABEL_TESTS_DIR}/packages/babel-parser/test/fixtures`;

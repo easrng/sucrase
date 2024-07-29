@@ -1,22 +1,11 @@
-import type {HelperManager} from "../HelperManager";
-import type {Options, SucraseContext, Transform} from "../index";
-import type NameManager from "../NameManager";
-import {ContextualKeyword} from "../parser/tokenizer/keywords";
-import {TokenType as tt} from "../parser/tokenizer/types";
-import type TokenProcessor from "../TokenProcessor";
-import getClassInfo, {type ClassInfo} from "../util/getClassInfo";
-import CJSImportTransformer from "./CJSImportTransformer";
-import ESMImportTransformer from "./ESMImportTransformer";
-import FlowTransformer from "./FlowTransformer";
-import JestHoistTransformer from "./JestHoistTransformer";
-import JSXTransformer from "./JSXTransformer";
-import NumericSeparatorTransformer from "./NumericSeparatorTransformer";
-import OptionalCatchBindingTransformer from "./OptionalCatchBindingTransformer";
-import OptionalChainingNullishTransformer from "./OptionalChainingNullishTransformer";
-import ReactDisplayNameTransformer from "./ReactDisplayNameTransformer";
-import ReactHotLoaderTransformer from "./ReactHotLoaderTransformer";
-import type Transformer from "./Transformer";
-import TypeScriptTransformer from "./TypeScriptTransformer";
+import type {CoreOptions, SucraseContext, Transformers} from "../core.js";
+import type {HelperManager} from "../HelperManager.js";
+import type NameManager from "../NameManager.js";
+import {ContextualKeyword} from "../parser/tokenizer/keywords.js";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
+import type TokenProcessor from "../TokenProcessor.js";
+import getClassInfo, {type ClassInfo} from "../util/getClassInfo.js";
+import type Transformer from "./Transformer.js";
 
 export interface RootTransformerResult {
   code: string;
@@ -32,44 +21,65 @@ export default class RootTransformer {
   private generatedVariables: Array<string> = [];
   private isImportsTransformEnabled: boolean;
   private isReactHotLoaderTransformEnabled: boolean;
-  private disableESTransforms: boolean;
+  private disableClassTransforms: boolean;
   private helperManager: HelperManager;
 
   constructor(
     sucraseContext: SucraseContext,
-    transforms: Array<Transform>,
+    transformers: Transformers,
     enableLegacyBabel5ModuleInterop: boolean,
-    options: Options,
+    options: CoreOptions,
   ) {
     this.nameManager = sucraseContext.nameManager;
     this.helperManager = sucraseContext.helperManager;
     const {tokenProcessor, importProcessor} = sucraseContext;
     this.tokens = tokenProcessor;
-    this.isImportsTransformEnabled = transforms.includes("imports");
-    this.isReactHotLoaderTransformEnabled = transforms.includes("react-hot-loader");
-    this.disableESTransforms = Boolean(options.disableESTransforms);
 
-    if (!options.disableESTransforms) {
+    const {
+      OptionalChainingNullishTransformer,
+      NumericSeparatorTransformer,
+      OptionalCatchBindingTransformer,
+      JSXTransformer,
+      ReactDisplayNameTransformer,
+      ReactHotLoaderTransformer,
+      CJSImportTransformer,
+      ClassTransformer,
+      TypeScriptTransformer,
+      FlowTransformer,
+      ESMImportTransformer,
+      JestHoistTransformer,
+    } = transformers;
+    this.isImportsTransformEnabled = Boolean(CJSImportTransformer);
+    this.isReactHotLoaderTransformEnabled = Boolean(ReactHotLoaderTransformer);
+    this.disableClassTransforms = !ClassTransformer;
+
+    if (OptionalChainingNullishTransformer) {
       this.transformers.push(
         new OptionalChainingNullishTransformer(tokenProcessor, this.nameManager),
       );
+    }
+    if (NumericSeparatorTransformer) {
       this.transformers.push(new NumericSeparatorTransformer(tokenProcessor));
+    }
+    if (OptionalCatchBindingTransformer) {
       this.transformers.push(new OptionalCatchBindingTransformer(tokenProcessor, this.nameManager));
     }
 
-    if (transforms.includes("jsx")) {
+    if (JSXTransformer) {
       if (options.jsxRuntime !== "preserve") {
         this.transformers.push(
           new JSXTransformer(this, tokenProcessor, importProcessor, this.nameManager, options),
         );
       }
+    }
+    if (ReactDisplayNameTransformer) {
       this.transformers.push(
         new ReactDisplayNameTransformer(this, tokenProcessor, importProcessor, options),
       );
     }
 
     let reactHotLoaderTransformer = null;
-    if (transforms.includes("react-hot-loader")) {
+    if (ReactHotLoaderTransformer) {
       if (!options.filePath) {
         throw new Error("filePath is required when using the react-hot-loader transform.");
       }
@@ -80,7 +90,7 @@ export default class RootTransformer {
     // Note that we always want to enable the imports transformer, even when the import transform
     // itself isn't enabled, since we need to do type-only import pruning for both Flow and
     // TypeScript.
-    if (transforms.includes("imports")) {
+    if (CJSImportTransformer) {
       if (importProcessor === null) {
         throw new Error("Expected non-null importProcessor with imports transform enabled.");
       }
@@ -94,8 +104,8 @@ export default class RootTransformer {
           reactHotLoaderTransformer,
           enableLegacyBabel5ModuleInterop,
           Boolean(options.enableLegacyTypeScriptModuleInterop),
-          transforms.includes("typescript"),
-          transforms.includes("flow"),
+          Boolean(TypeScriptTransformer),
+          Boolean(FlowTransformer),
           Boolean(options.preserveDynamicImport),
           Boolean(options.keepUnusedImports),
         ),
@@ -107,25 +117,25 @@ export default class RootTransformer {
           this.nameManager,
           this.helperManager,
           reactHotLoaderTransformer,
-          transforms.includes("typescript"),
-          transforms.includes("flow"),
+          Boolean(TypeScriptTransformer),
+          Boolean(FlowTransformer),
           Boolean(options.keepUnusedImports),
           options,
         ),
       );
     }
 
-    if (transforms.includes("flow")) {
+    if (FlowTransformer) {
       this.transformers.push(
-        new FlowTransformer(this, tokenProcessor, transforms.includes("imports")),
+        new FlowTransformer(this, tokenProcessor, Boolean(CJSImportTransformer)),
       );
     }
-    if (transforms.includes("typescript")) {
+    if (TypeScriptTransformer) {
       this.transformers.push(
-        new TypeScriptTransformer(this, tokenProcessor, transforms.includes("imports")),
+        new TypeScriptTransformer(this, tokenProcessor, Boolean(CJSImportTransformer)),
       );
     }
-    if (transforms.includes("jest")) {
+    if (JestHoistTransformer) {
       this.transformers.push(
         new JestHoistTransformer(this, tokenProcessor, this.nameManager, importProcessor),
       );
@@ -223,7 +233,12 @@ export default class RootTransformer {
   }
 
   processClass(): void {
-    const classInfo = getClassInfo(this, this.tokens, this.nameManager, this.disableESTransforms);
+    const classInfo = getClassInfo(
+      this,
+      this.tokens,
+      this.nameManager,
+      this.disableClassTransforms,
+    );
 
     // Both static and instance initializers need a class name to use to invoke the initializer, so
     // assign to one if necessary.

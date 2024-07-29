@@ -1,6 +1,6 @@
-import {TokenType as tt} from "../parser/tokenizer/types";
-import type TokenProcessor from "../TokenProcessor";
-import getImportExportSpecifierInfo from "./getImportExportSpecifierInfo";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
+import type TokenProcessor from "../TokenProcessor.js";
+import getImportExportSpecifierInfo from "./getImportExportSpecifierInfo.js";
 
 /**
  * Special case code to scan for imported names in ESM TypeScript. We need to do this so we can

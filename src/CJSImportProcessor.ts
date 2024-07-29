@@ -1,12 +1,12 @@
-import type {HelperManager} from "./HelperManager";
-import type {Options} from "./index";
-import type NameManager from "./NameManager";
-import {isDeclaration} from "./parser/tokenizer";
-import {ContextualKeyword} from "./parser/tokenizer/keywords";
-import {TokenType as tt} from "./parser/tokenizer/types";
-import type TokenProcessor from "./TokenProcessor";
-import getImportExportSpecifierInfo from "./util/getImportExportSpecifierInfo";
-import {getNonTypeIdentifiers} from "./util/getNonTypeIdentifiers";
+import type {CoreOptions} from "./core.js";
+import type {HelperManager} from "./HelperManager.js";
+import type NameManager from "./NameManager.js";
+import {isDeclaration} from "./parser/tokenizer/index.js";
+import {ContextualKeyword} from "./parser/tokenizer/keywords.js";
+import {TokenType as tt} from "./parser/tokenizer/types.js";
+import type TokenProcessor from "./TokenProcessor.js";
+import getImportExportSpecifierInfo from "./util/getImportExportSpecifierInfo.js";
+import {getNonTypeIdentifiers} from "./util/getNonTypeIdentifiers.js";
 
 interface NamedImport {
   importedName: string;
@@ -41,7 +41,7 @@ export default class CJSImportProcessor {
     readonly nameManager: NameManager,
     readonly tokens: TokenProcessor,
     readonly enableLegacyTypeScriptModuleInterop: boolean,
-    readonly options: Options,
+    readonly options: CoreOptions,
     readonly isTypeScriptTransformEnabled: boolean,
     readonly keepUnusedImports: boolean,
     readonly helperManager: HelperManager,

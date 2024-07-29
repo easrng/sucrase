@@ -1,13 +1,13 @@
 /* eslint max-len: 0 */
 
-import {input, isFlowEnabled, state} from "../traverser/base";
-import {unexpected} from "../traverser/util";
-import {charCodes} from "../util/charcodes";
-import {IS_IDENTIFIER_CHAR, IS_IDENTIFIER_START} from "../util/identifier";
-import {IS_WHITESPACE, skipWhiteSpace} from "../util/whitespace";
-import {ContextualKeyword} from "./keywords";
-import readWord from "./readWord";
-import {type TokenType, TokenType as tt} from "./types";
+import {input, isFlowEnabled, state} from "../traverser/base.js";
+import {unexpected} from "../traverser/util.js";
+import {charCodes} from "../util/charcodes.js";
+import {IS_IDENTIFIER_CHAR, IS_IDENTIFIER_START} from "../util/identifier.js";
+import {IS_WHITESPACE, skipWhiteSpace} from "../util/whitespace.js";
+import {ContextualKeyword} from "./keywords.js";
+import readWord from "./readWord.js";
+import {type TokenType, TokenType as tt} from "./types.js";
 
 export enum IdentifierRole {
   Access,

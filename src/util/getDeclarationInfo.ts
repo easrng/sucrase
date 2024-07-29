@@ -1,6 +1,6 @@
-import {isTopLevelDeclaration} from "../parser/tokenizer";
-import {TokenType as tt} from "../parser/tokenizer/types";
-import type TokenProcessor from "../TokenProcessor";
+import {isTopLevelDeclaration} from "../parser/tokenizer/index.js";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
+import type TokenProcessor from "../TokenProcessor.js";
 
 export interface DeclarationInfo {
   typeDeclarations: Set<string>;

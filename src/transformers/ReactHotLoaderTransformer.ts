@@ -1,6 +1,6 @@
-import {IdentifierRole, isTopLevelDeclaration} from "../parser/tokenizer";
-import type TokenProcessor from "../TokenProcessor";
-import Transformer from "./Transformer";
+import {IdentifierRole, isTopLevelDeclaration} from "../parser/tokenizer/index.js";
+import type TokenProcessor from "../TokenProcessor.js";
+import Transformer from "./Transformer.js";
 
 export default class ReactHotLoaderTransformer extends Transformer {
   private extractedDefaultExportName: string | null = null;

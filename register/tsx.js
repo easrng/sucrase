@@ -1,1 +1,1 @@
-require("../dist/register").registerTSX();
+require("../dist/cjs/register").registerTSX();

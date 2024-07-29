@@ -1,8 +1,8 @@
-import {ContextualKeyword} from "../parser/tokenizer/keywords";
-import {TokenType as tt} from "../parser/tokenizer/types";
-import type TokenProcessor from "../TokenProcessor";
-import type RootTransformer from "./RootTransformer";
-import Transformer from "./Transformer";
+import {ContextualKeyword} from "../parser/tokenizer/keywords.js";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
+import type TokenProcessor from "../TokenProcessor.js";
+import type RootTransformer from "./RootTransformer.js";
+import Transformer from "./Transformer.js";
 
 export default class FlowTransformer extends Transformer {
   constructor(

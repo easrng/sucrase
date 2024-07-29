@@ -1,9 +1,9 @@
-import type {Token} from "../parser/tokenizer";
-import {TokenType as tt} from "../parser/tokenizer/types";
-import type TokenProcessor from "../TokenProcessor";
-import isIdentifier from "../util/isIdentifier";
-import type RootTransformer from "./RootTransformer";
-import Transformer from "./Transformer";
+import type {Token} from "../parser/tokenizer/index.js";
+import {TokenType as tt} from "../parser/tokenizer/types.js";
+import type TokenProcessor from "../TokenProcessor.js";
+import isIdentifier from "../util/isIdentifier.js";
+import type RootTransformer from "./RootTransformer.js";
+import Transformer from "./Transformer.js";
 
 export default class TypeScriptTransformer extends Transformer {
   constructor(

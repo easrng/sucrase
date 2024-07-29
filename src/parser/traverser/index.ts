@@ -1,8 +1,8 @@
-import type {File} from "../index";
-import {nextToken, skipLineComment} from "../tokenizer/index";
-import {charCodes} from "../util/charcodes";
-import {input, state} from "./base";
-import {parseTopLevel} from "./statement";
+import type {File} from "../index.js";
+import {nextToken, skipLineComment} from "../tokenizer/index.js";
+import {charCodes} from "../util/charcodes.js";
+import {input, state} from "./base.js";
+import {parseTopLevel} from "./statement.js";
 
 export function parseFile(): File {
   // If enabled, skip leading hashbang line.

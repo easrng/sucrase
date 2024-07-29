@@ -1,9 +1,10 @@
-#!./node_modules/.bin/sucrase-node
+#!./node_modules/.bin/tsx
 /* eslint-disable no-console */
-import mergeDirectoryContents from "./mergeDirectoryContents";
-import run from "./run";
+import mergeDirectoryContents from "./mergeDirectoryContents.js";
+import run from "./run.js";
 
-const SUCRASE = "./node_modules/.bin/sucrase";
+const SUCRASE =
+  './node_modules/.bin/tsx -e \'process.argv.unshift("");import("./src/cli.ts").then(m=>m.default())\' --';
 const SUCRASE_SELF = "./bin/sucrase";
 const TSC = "./node_modules/.bin/tsc";
 
@@ -42,21 +43,25 @@ async function buildBenchmark(): Promise<void> {
 
 async function buildSucrase(): Promise<void> {
   console.log("Building Sucrase");
-  await run(`rm -rf ./dist`);
-  await run(`${SUCRASE} ./src -d ./dist --transforms imports,typescript -q`);
+  await run(`rm -rf ./dist && mkdir ./dist`);
+  await run(`${SUCRASE} ./src -d ./dist/esm --transforms typescript -q`);
+  await run(`${SUCRASE} ./src -d ./dist/cjs --transforms imports,typescript -q`);
+  await run(`echo '{"type":"commonjs"}' >./dist/cjs/package.json`);
   if (!fast) {
-    await run(`rm -rf ./dist-self-build`);
+    await run(`rm -rf ./dist-self-build && mkdir ./dist-self-build`);
     await run(`rm -rf ./dist-types`);
     // The installed Sucrase version is always the previous version, but released versions of
     // Sucrase should be self-compiled, so we do a multi-phase compilation. We compile Sucrase with
     // the previous version, then use it to compile the current code, then use that to compile the
     // code again. The second and third outputs should be exactly identical; otherwise we may have a
     // problem where it miscompiled itself.
-    await run(`${SUCRASE_SELF} ./src -d ./dist-self-build --transforms imports,typescript -q`);
+    await run(`${SUCRASE_SELF} ./src -d ./dist-self-build/cjs --transforms imports,typescript -q`);
+    await run(`echo '{"type":"commonjs"}' >./dist-self-build/cjs/package.json`);
     await run(`${SUCRASE_SELF} ./src -d ./dist-self-build/esm --transforms typescript -q`);
     await run("rm -rf ./dist");
-    await run("mv ./dist-self-build ./dist");
-    await run(`${SUCRASE_SELF} ./src -d ./dist-self-build --transforms imports,typescript -q`);
+    await run("mv ./dist-self-build ./dist && mkdir ./dist-self-build");
+    await run(`${SUCRASE_SELF} ./src -d ./dist-self-build/cjs --transforms imports,typescript -q`);
+    await run(`echo '{"type":"commonjs"}' >./dist-self-build/cjs/package.json`);
     await run(`${SUCRASE_SELF} ./src -d ./dist-self-build/esm --transforms typescript -q`);
     await run("diff -r ./dist ./dist-self-build");
     // Also add in .d.ts files from tsc, which only need to be compiled once.

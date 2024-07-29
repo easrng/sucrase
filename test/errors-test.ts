@@ -1,6 +1,6 @@
 import {throws} from "assert";
 
-import {transform} from "../src";
+import {transform} from "../src/index.js";
 
 describe("errors", () => {
   it("gives proper line numbers in syntax errors", () => {

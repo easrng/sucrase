@@ -1,11 +1,11 @@
-import type {Options} from "../index";
-import {IdentifierRole} from "../parser/tokenizer";
-import {TokenType, TokenType as tt} from "../parser/tokenizer/types";
-import type TokenProcessor from "../TokenProcessor";
-import {startsWithLowerCase} from "../transformers/JSXTransformer";
-import getJSXPragmaInfo from "./getJSXPragmaInfo";
+import type {CoreOptions} from "../core.js";
+import {IdentifierRole} from "../parser/tokenizer/index.js";
+import {TokenType, TokenType as tt} from "../parser/tokenizer/types.js";
+import type TokenProcessor from "../TokenProcessor.js";
+import {startsWithLowerCase} from "../transformers/JSXTransformer.js";
+import getJSXPragmaInfo from "./getJSXPragmaInfo.js";
 
-export function getNonTypeIdentifiers(tokens: TokenProcessor, options: Options): Set<string> {
+export function getNonTypeIdentifiers(tokens: TokenProcessor, options: CoreOptions): Set<string> {
   const jsxPragmaInfo = getJSXPragmaInfo(options);
   const nonTypeIdentifiers: Set<string> = new Set();
   for (let i = 0; i < tokens.tokens.length; i++) {

@@ -1,8 +1,8 @@
-import type {HelperManager} from "./HelperManager";
-import type {Token} from "./parser/tokenizer";
-import type {ContextualKeyword} from "./parser/tokenizer/keywords";
-import {type TokenType, TokenType as tt} from "./parser/tokenizer/types";
-import isAsyncOperation from "./util/isAsyncOperation";
+import type {HelperManager} from "./HelperManager.js";
+import type {Token} from "./parser/tokenizer/index.js";
+import type {ContextualKeyword} from "./parser/tokenizer/keywords.js";
+import {type TokenType, TokenType as tt} from "./parser/tokenizer/types.js";
+import isAsyncOperation from "./util/isAsyncOperation.js";
 
 export interface TokenProcessorSnapshot {
   resultCode: string;
@@ -18,16 +18,18 @@ export default class TokenProcessor {
   private resultCode: string = "";
   // Array mapping input token index to optional string index position in the
   // output code.
-  private resultMappings: Array<number | undefined> = new Array(this.tokens.length);
+  private resultMappings: Array<number | undefined>;
   private tokenIndex = 0;
 
   constructor(
     readonly code: string,
     readonly tokens: Array<Token>,
     readonly isFlowEnabled: boolean,
-    readonly disableESTransforms: boolean,
+    readonly optionalChainingNullishEnabled: boolean,
     readonly helperManager: HelperManager,
-  ) {}
+  ) {
+    this.resultMappings = new Array(this.tokens.length);
+  }
 
   /**
    * Snapshot the token state in a way that can be restored later, useful for
@@ -262,7 +264,7 @@ export default class TokenProcessor {
     if (token.numNullishCoalesceStarts || token.isOptionalChainStart) {
       token.isAsyncOperation = isAsyncOperation(this);
     }
-    if (this.disableESTransforms) {
+    if (!this.optionalChainingNullishEnabled) {
       return;
     }
     if (token.numNullishCoalesceStarts) {
@@ -297,10 +299,10 @@ export default class TokenProcessor {
 
   private appendTokenSuffix(): void {
     const token = this.currentToken();
-    if (token.isOptionalChainEnd && !this.disableESTransforms) {
+    if (token.isOptionalChainEnd && this.optionalChainingNullishEnabled) {
       this.resultCode += "])";
     }
-    if (token.numNullishCoalesceEnds && !this.disableESTransforms) {
+    if (token.numNullishCoalesceEnds && this.optionalChainingNullishEnabled) {
       for (let i = 0; i < token.numNullishCoalesceEnds; i++) {
         this.resultCode += "))";
       }

@@ -1,8 +1,8 @@
 import {throws} from "assert";
 
-import {transform, type Options} from "../src";
-import {ESMODULE_PREFIX, IMPORT_DEFAULT_PREFIX} from "./prefixes";
-import {assertResult} from "./util";
+import {transform, type Options} from "../src/index.js";
+import {ESMODULE_PREFIX, IMPORT_DEFAULT_PREFIX} from "./prefixes.js";
+import {assertResult} from "./util.js";
 
 function assertFlowResult(
   code: string,
