@@ -1,4 +1,4 @@
-import CJSImportProcessor from "./CJSImportProcessor.js";
+import type CJSImportProcessor from "./CJSImportProcessor.js";
 import computeSourceMap, {type RawSourceMap} from "./computeSourceMap.js";
 import {HelperManager} from "./HelperManager.js";
 import identifyShadowedGlobals from "./identifyShadowedGlobals.js";
@@ -9,7 +9,6 @@ import type {Scope} from "./parser/tokenizer/state.js";
 import TokenProcessor from "./TokenProcessor.js";
 import RootTransformer from "./transformers/RootTransformer.js";
 import formatTokens from "./util/formatTokens.js";
-import getTSImportedNames from "./util/getTSImportedNames.js";
 
 export interface TransformResult {
   code: string;
@@ -82,13 +81,16 @@ export function coreGetFormattedTokens(code: string, options: CoreOptions): stri
  * being done.
  */
 function getSucraseContext(code: string, options: CoreOptions): SucraseContext {
-  const isJSXEnabled = Boolean(options.transformers.JSXTransformer);
-  const isTypeScriptEnabled = Boolean(options.transformers.TypeScriptTransformer);
-  const isFlowEnabled = Boolean(options.transformers.FlowTransformer);
+  const {JSXTransformer, TypeScriptTransformer, FlowTransformer} = options.transformers;
   const optionalChainingNullishEnabled = Boolean(
     options.transformers.OptionalChainingNullishTransformer,
   );
-  const file = parse(code, isJSXEnabled, isTypeScriptEnabled, isFlowEnabled);
+  const file = parse(
+    code,
+    JSXTransformer?.plugin,
+    TypeScriptTransformer?.plugin,
+    FlowTransformer?.plugin,
+  );
   const tokens = file.tokens;
   const scopes = file.scopes;
 
@@ -97,20 +99,21 @@ function getSucraseContext(code: string, options: CoreOptions): SucraseContext {
   const tokenProcessor = new TokenProcessor(
     code,
     tokens,
-    isFlowEnabled,
+    Boolean(FlowTransformer),
     optionalChainingNullishEnabled,
     helperManager,
   );
   const enableLegacyTypeScriptModuleInterop = Boolean(options.enableLegacyTypeScriptModuleInterop);
 
+  const {CJSImportProcessor} = options.transformers;
   let importProcessor = null;
-  if (options.transformers.CJSImportTransformer) {
+  if (CJSImportProcessor) {
     importProcessor = new CJSImportProcessor(
       nameManager,
       tokenProcessor,
       enableLegacyTypeScriptModuleInterop,
       options,
-      isTypeScriptEnabled,
+      Boolean(TypeScriptTransformer),
       Boolean(options.keepUnusedImports),
       helperManager,
     );
@@ -118,12 +121,16 @@ function getSucraseContext(code: string, options: CoreOptions): SucraseContext {
     // We need to mark shadowed globals after processing imports so we know that the globals are,
     // but before type-only import pruning, since that relies on shadowing information.
     identifyShadowedGlobals(tokenProcessor, scopes, importProcessor.getGlobalNames());
-    if (isTypeScriptEnabled && !options.keepUnusedImports) {
+    if (TypeScriptTransformer && !options.keepUnusedImports) {
       importProcessor.pruneTypeOnlyImports();
     }
-  } else if (isTypeScriptEnabled && !options.keepUnusedImports) {
+  } else if (TypeScriptTransformer && !options.keepUnusedImports) {
     // Shadowed global detection is needed for TS implicit elision of imported names.
-    identifyShadowedGlobals(tokenProcessor, scopes, getTSImportedNames(tokenProcessor));
+    identifyShadowedGlobals(
+      tokenProcessor,
+      scopes,
+      TypeScriptTransformer.getImportedNames(tokenProcessor),
+    );
   }
   return {tokenProcessor, scopes, nameManager, importProcessor, helperManager};
 }

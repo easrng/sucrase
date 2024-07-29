@@ -1,11 +1,15 @@
+import * as plugin from "../parser/plugins/typescript.js";
 import type {Token} from "../parser/tokenizer/index.js";
 import {TokenType as tt} from "../parser/tokenizer/types.js";
 import type TokenProcessor from "../TokenProcessor.js";
+import getTSImportedNames from "../util/getTSImportedNames.js";
 import isIdentifier from "../util/isIdentifier.js";
 import type RootTransformer from "./RootTransformer.js";
 import Transformer from "./Transformer.js";
 
 export default class TypeScriptTransformer extends Transformer {
+  static plugin = plugin;
+  static getImportedNames = getTSImportedNames;
   constructor(
     readonly rootTransformer: RootTransformer,
     readonly tokens: TokenProcessor,

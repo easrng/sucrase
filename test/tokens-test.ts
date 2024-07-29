@@ -1,6 +1,9 @@
 import * as assert from "assert";
 
 import {parse} from "../src/parser/index.js";
+import * as flowPlugin from "../src/parser/plugins/flow.js";
+import * as jsxPlugin from "../src/parser/plugins/jsx/index.js";
+import * as typescriptPlugin from "../src/parser/plugins/typescript.js";
 import {IdentifierRole, JSXRole, type Token} from "../src/parser/tokenizer/index.js";
 import {ContextualKeyword} from "../src/parser/tokenizer/keywords.js";
 import {TokenType, TokenType as tt} from "../src/parser/tokenizer/types.js";
@@ -13,7 +16,12 @@ function assertTokens(
   expectedTokens: Array<TokenExpectation>,
   {isFlow = false}: {isFlow?: boolean} = {},
 ): void {
-  const tokens: Array<SimpleToken> = parse(code, true, !isFlow, isFlow).tokens;
+  const tokens: Array<SimpleToken> = parse(
+    code,
+    jsxPlugin,
+    isFlow ? undefined : typescriptPlugin,
+    isFlow ? flowPlugin : undefined,
+  ).tokens;
   const helpMessage = `Tokens did not match. Starting point with just token types: [${tokens
     .map((t) => {
       let tokenCode = "{";
@@ -40,7 +48,7 @@ function assertTokens(
 }
 
 function assertFirstJSXRole(code: string, expectedJSXRole: JSXRole): void {
-  const tokens = parse(code, true, true, false).tokens;
+  const tokens = parse(code, jsxPlugin, typescriptPlugin).tokens;
   const jsxTagStartTokens = tokens.filter((t) => t.type === TokenType.jsxTagStart);
   assert.ok(jsxTagStartTokens.length > 0);
   assert.strictEqual(jsxTagStartTokens[0].jsxRole, expectedJSXRole);

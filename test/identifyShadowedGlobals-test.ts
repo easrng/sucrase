@@ -5,11 +5,12 @@ import {HelperManager} from "../src/HelperManager.js";
 import {hasShadowedGlobals} from "../src/identifyShadowedGlobals.js";
 import NameManager from "../src/NameManager.js";
 import {parse} from "../src/parser/index.js";
+import * as typescriptPlugin from "../src/parser/plugins/typescript.js";
 import TokenProcessor from "../src/TokenProcessor.js";
 import ESMImportTransformer from "../src/transformers/ESMImportTransformer.js";
 
 function assertHasShadowedGlobals(code: string, expected: boolean): void {
-  const file = parse(code, false, true, false);
+  const file = parse(code, undefined, typescriptPlugin, undefined);
   const nameManager = new NameManager(code, file.tokens);
   const helperManager = new HelperManager(nameManager);
   const tokenProcessor = new TokenProcessor(code, file.tokens, false, false, helperManager);

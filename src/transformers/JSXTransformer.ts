@@ -1,12 +1,14 @@
 import type CJSImportProcessor from "../CJSImportProcessor.js";
 import type {CoreOptions} from "../core.js";
 import type NameManager from "../NameManager.js";
+import * as plugin from "../parser/plugins/jsx/index.js";
 import XHTMLEntities from "../parser/plugins/jsx/xhtml.js";
 import {JSXRole} from "../parser/tokenizer/index.js";
 import {TokenType as tt} from "../parser/tokenizer/types.js";
 import {charCodes} from "../parser/util/charcodes.js";
 import type TokenProcessor from "../TokenProcessor.js";
 import getJSXPragmaInfo, {type JSXPragmaInfo} from "../util/getJSXPragmaInfo.js";
+import {startsWithLowerCase} from "../util/startsWithLowerCase.js";
 import type RootTransformer from "./RootTransformer.js";
 import Transformer from "./Transformer.js";
 
@@ -14,6 +16,7 @@ export default class JSXTransformer extends Transformer {
   jsxPragmaInfo: JSXPragmaInfo;
   jsxImportSource: string;
   isAutomaticRuntime: boolean;
+  static plugin = plugin;
 
   // State for calculating the line number of each JSX tag in development.
   lastLineNumber: number = 1;
@@ -557,17 +560,6 @@ export default class JSXTransformer extends Transformer {
     }
     return this.filenameVarName;
   }
-}
-
-/**
- * Spec for identifiers: https://tc39.github.io/ecma262/#prod-IdentifierStart.
- *
- * Really only treat anything starting with a-z as tag names.  `_`, `$`, `é`
- * should be treated as component names
- */
-export function startsWithLowerCase(s: string): boolean {
-  const firstChar = s.charCodeAt(0);
-  return firstChar >= charCodes.lowercaseA && firstChar <= charCodes.lowercaseZ;
 }
 
 /**

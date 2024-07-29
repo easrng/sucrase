@@ -1,5 +1,3 @@
-import {flowParseAssignableListItemTypes} from "../plugins/flow.js";
-import {tsParseAssignableListItemTypes, tsParseModifiers} from "../plugins/typescript.js";
 import {
   eat,
   IdentifierRole,
@@ -10,7 +8,7 @@ import {
 } from "../tokenizer/index.js";
 import {ContextualKeyword} from "../tokenizer/keywords.js";
 import {TokenType, TokenType as tt} from "../tokenizer/types.js";
-import {isFlowEnabled, isTypeScriptEnabled, state} from "./base.js";
+import {flowPlugin, typeScriptPlugin, state} from "./base.js";
 import {parseIdentifier, parseMaybeAssign, parseObj} from "./expression.js";
 import {expect, unexpected} from "./util.js";
 
@@ -122,8 +120,8 @@ export function parseBindingList(
 }
 
 function parseAssignableListItem(allowModifiers: boolean, isBlockScope: boolean): void {
-  if (allowModifiers) {
-    tsParseModifiers([
+  if (allowModifiers && typeScriptPlugin) {
+    typeScriptPlugin.tsParseModifiers([
       ContextualKeyword._public,
       ContextualKeyword._protected,
       ContextualKeyword._private,
@@ -138,10 +136,10 @@ function parseAssignableListItem(allowModifiers: boolean, isBlockScope: boolean)
 }
 
 function parseAssignableListItemTypes(): void {
-  if (isFlowEnabled) {
-    flowParseAssignableListItemTypes();
-  } else if (isTypeScriptEnabled) {
-    tsParseAssignableListItemTypes();
+  if (flowPlugin) {
+    flowPlugin.flowParseAssignableListItemTypes();
+  } else if (typeScriptPlugin) {
+    typeScriptPlugin.tsParseAssignableListItemTypes();
   }
 }
 

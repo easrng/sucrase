@@ -1,9 +1,7 @@
 import {eatTypeToken, lookaheadType, match} from "../tokenizer/index.js";
 import {TokenType as tt} from "../tokenizer/types.js";
-import {isFlowEnabled, isTypeScriptEnabled} from "../traverser/base.js";
+import {flowPlugin, typeScriptPlugin} from "../traverser/base.js";
 import {baseParseConditional} from "../traverser/expression.js";
-import {flowParseTypeAnnotation} from "./flow.js";
-import {tsParseTypeAnnotation} from "./typescript.js";
 
 /**
  * Common parser code for TypeScript and Flow.
@@ -28,10 +26,10 @@ export function typedParseConditional(noIn: boolean): void {
 export function typedParseParenItem(): void {
   eatTypeToken(tt.question);
   if (match(tt.colon)) {
-    if (isTypeScriptEnabled) {
-      tsParseTypeAnnotation();
-    } else if (isFlowEnabled) {
-      flowParseTypeAnnotation();
+    if (typeScriptPlugin) {
+      typeScriptPlugin.tsParseTypeAnnotation();
+    } else if (flowPlugin) {
+      flowPlugin.flowParseTypeAnnotation();
     }
   }
 }

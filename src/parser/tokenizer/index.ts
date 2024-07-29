@@ -1,6 +1,6 @@
 /* eslint max-len: 0 */
 
-import {input, isFlowEnabled, state} from "../traverser/base.js";
+import {input, flowPlugin, state} from "../traverser/base.js";
 import {unexpected} from "../traverser/util.js";
 import {charCodes} from "../util/charcodes.js";
 import {IS_IDENTIFIER_CHAR, IS_IDENTIFIER_START} from "../util/identifier.js";
@@ -460,7 +460,7 @@ function readToken_pipe_amp(code: number): void {
     if (nextChar === charCodes.greaterThan) {
       finishOp(tt.pipeline, 2);
       return;
-    } else if (nextChar === charCodes.rightCurlyBrace && isFlowEnabled) {
+    } else if (nextChar === charCodes.rightCurlyBrace && flowPlugin) {
       // '|}'
       finishOp(tt.braceBarR, 2);
       return;
@@ -615,7 +615,7 @@ function readToken_question(): void {
     nextChar === charCodes.questionMark &&
     // In Flow (but not TypeScript), ??string is a valid type that should be
     // tokenized as two individual ? tokens.
-    !(isFlowEnabled && state.isType)
+    !(flowPlugin && state.isType)
   ) {
     if (nextChar2 === charCodes.equalsTo) {
       // '??='
@@ -678,7 +678,7 @@ export function getTokenFromCode(code: number): void {
       return;
 
     case charCodes.leftCurlyBrace:
-      if (isFlowEnabled && input.charCodeAt(state.pos + 1) === charCodes.verticalBar) {
+      if (flowPlugin && input.charCodeAt(state.pos + 1) === charCodes.verticalBar) {
         finishOp(tt.braceBarL, 2);
       } else {
         ++state.pos;

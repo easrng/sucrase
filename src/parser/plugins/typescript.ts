@@ -13,7 +13,7 @@ import {
 } from "../tokenizer/index.js";
 import {ContextualKeyword} from "../tokenizer/keywords.js";
 import {TokenType, TokenType as tt} from "../tokenizer/types.js";
-import {isJSXEnabled, state} from "../traverser/base.js";
+import {jsxPlugin, state} from "../traverser/base.js";
 import {
   atPossibleAsync,
   baseParseMaybeAssign,
@@ -56,7 +56,6 @@ import {
   semicolon,
   unexpected,
 } from "../traverser/util.js";
-import {nextJSXTagToken} from "./jsx/index.js";
 
 function tsIsIdentifier(): boolean {
   // TODO: actually a bit more complex in TypeScript, but shouldn't matter.
@@ -812,7 +811,7 @@ export function tsTryParseJSXTypeArgument(): void {
       eat(tt.comma);
     }
     // Process >, but the one after needs to be parsed JSX-style.
-    nextJSXTagToken();
+    jsxPlugin!.nextJSXTagToken();
     popTypeContext(oldIsType);
   }
 }
@@ -1546,7 +1545,7 @@ export function tsStartParseAsyncArrowFromCallExpression(): void {
 // Returns true if the expression was an arrow function.
 export function tsParseMaybeAssign(noIn: boolean, isWithinParens: boolean): boolean {
   // Note: When the JSX plugin is on, type assertions (`<T> x`) aren't valid syntax.
-  if (isJSXEnabled) {
+  if (jsxPlugin) {
     return tsParseMaybeAssignWithJSX(noIn, isWithinParens);
   } else {
     return tsParseMaybeAssignWithoutJSX(noIn, isWithinParens);

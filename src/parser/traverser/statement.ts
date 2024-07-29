@@ -2,42 +2,6 @@
 
 import {File} from "../index.js";
 import {
-  flowAfterParseClassSuper,
-  flowAfterParseVarHead,
-  flowParseExportDeclaration,
-  flowParseExportStar,
-  flowParseIdentifierStatement,
-  flowParseImportSpecifier,
-  flowParseTypeAnnotation,
-  flowParseTypeParameterDeclaration,
-  flowShouldDisallowExportDefaultSpecifier,
-  flowShouldParseExportDeclaration,
-  flowShouldParseExportStar,
-  flowStartParseFunctionParams,
-  flowStartParseImportSpecifiers,
-  flowTryParseExportDefaultExpression,
-  flowTryParseStatement,
-} from "../plugins/flow.js";
-import {
-  tsAfterParseClassSuper,
-  tsAfterParseVarHead,
-  tsIsDeclarationStart,
-  tsParseExportDeclaration,
-  tsParseExportSpecifier,
-  tsParseIdentifierStatement,
-  tsParseImportEqualsDeclaration,
-  tsParseImportSpecifier,
-  tsParseMaybeDecoratorArguments,
-  tsParseModifiers,
-  tsStartParseFunctionParams,
-  tsTryParseClassMemberWithIsStatic,
-  tsTryParseExport,
-  tsTryParseExportDefaultExpression,
-  tsTryParseStatementContent,
-  tsTryParseTypeAnnotation,
-  tsTryParseTypeParameters,
-} from "../plugins/typescript.js";
-import {
   eat,
   eatTypeToken,
   IdentifierRole,
@@ -54,7 +18,7 @@ import {ContextualKeyword} from "../tokenizer/keywords.js";
 import {Scope} from "../tokenizer/state.js";
 import {type TokenType, TokenType as tt} from "../tokenizer/types.js";
 import {charCodes} from "../util/charcodes.js";
-import {getNextContextId, input, isFlowEnabled, isTypeScriptEnabled, state} from "./base.js";
+import {getNextContextId, input, flowPlugin, typeScriptPlugin, state} from "./base.js";
 import {
   parseCallExpressionArguments,
   parseExprAtom,
@@ -105,8 +69,8 @@ export function parseTopLevel(): File {
 // does not help.
 
 export function parseStatement(declaration: boolean): void {
-  if (isFlowEnabled) {
-    if (flowTryParseStatement()) {
+  if (flowPlugin) {
+    if (flowPlugin.flowTryParseStatement()) {
       return;
     }
   }
@@ -117,8 +81,8 @@ export function parseStatement(declaration: boolean): void {
 }
 
 function parseStatementContent(declaration: boolean): void {
-  if (isTypeScriptEnabled) {
-    if (tsTryParseStatementContent()) {
+  if (typeScriptPlugin) {
+    if (typeScriptPlugin.tsTryParseStatementContent()) {
       return;
     }
   }
@@ -322,8 +286,8 @@ function parseDecorator(): void {
 }
 
 function parseMaybeDecoratorArguments(): void {
-  if (isTypeScriptEnabled) {
-    tsParseMaybeDecoratorArguments();
+  if (typeScriptPlugin) {
+    typeScriptPlugin.tsParseMaybeDecoratorArguments();
   } else {
     baseParseMaybeDecoratorArguments();
   }
@@ -496,8 +460,8 @@ function parseThrowStatement(): void {
 function parseCatchClauseParam(): void {
   parseBindingAtom(true /* isBlockScope */);
 
-  if (isTypeScriptEnabled) {
-    tsTryParseTypeAnnotation();
+  if (typeScriptPlugin) {
+    typeScriptPlugin.tsTryParseTypeAnnotation();
   }
 }
 
@@ -555,10 +519,10 @@ function parseLabeledStatement(): void {
  * to handle statements like "declare".
  */
 function parseIdentifierStatement(contextualKeyword: ContextualKeyword): void {
-  if (isTypeScriptEnabled) {
-    tsParseIdentifierStatement(contextualKeyword);
-  } else if (isFlowEnabled) {
-    flowParseIdentifierStatement(contextualKeyword);
+  if (typeScriptPlugin) {
+    typeScriptPlugin.tsParseIdentifierStatement(contextualKeyword);
+  } else if (flowPlugin) {
+    flowPlugin.flowParseIdentifierStatement(contextualKeyword);
   } else {
     semicolon();
   }
@@ -636,10 +600,10 @@ function parseVar(isFor: boolean, isBlockScope: boolean): void {
 
 function parseVarHead(isBlockScope: boolean): void {
   parseBindingAtom(isBlockScope);
-  if (isTypeScriptEnabled) {
-    tsAfterParseVarHead();
-  } else if (isFlowEnabled) {
-    flowAfterParseVarHead();
+  if (typeScriptPlugin) {
+    typeScriptPlugin.tsAfterParseVarHead();
+  } else if (flowPlugin) {
+    flowPlugin.flowAfterParseVarHead();
   }
 }
 
@@ -690,10 +654,10 @@ export function parseFunctionParams(
   allowModifiers: boolean = false,
   funcContextId: number = 0,
 ): void {
-  if (isTypeScriptEnabled) {
-    tsStartParseFunctionParams();
-  } else if (isFlowEnabled) {
-    flowStartParseFunctionParams();
+  if (typeScriptPlugin) {
+    typeScriptPlugin.tsStartParseFunctionParams();
+  } else if (flowPlugin) {
+    flowPlugin.flowStartParseFunctionParams();
   }
 
   expect(tt.parenL);
@@ -773,8 +737,8 @@ function parseClassBody(classContextId: number): void {
 }
 
 function parseClassMember(memberStart: number, classContextId: number): void {
-  if (isTypeScriptEnabled) {
-    tsParseModifiers([
+  if (typeScriptPlugin) {
+    typeScriptPlugin.tsParseModifiers([
       ContextualKeyword._declare,
       ContextualKeyword._public,
       ContextualKeyword._protected,
@@ -813,8 +777,8 @@ function parseClassMemberWithIsStatic(
   isStatic: boolean,
   classContextId: number,
 ): void {
-  if (isTypeScriptEnabled) {
-    if (tsTryParseClassMemberWithIsStatic(isStatic)) {
+  if (typeScriptPlugin) {
+    if (typeScriptPlugin.tsTryParseClassMemberWithIsStatic(isStatic)) {
       return;
     }
   }
@@ -879,11 +843,11 @@ function parseClassMemberWithIsStatic(
 }
 
 function parseClassMethod(functionStart: number, isConstructor: boolean): void {
-  if (isTypeScriptEnabled) {
-    tsTryParseTypeParameters();
-  } else if (isFlowEnabled) {
+  if (typeScriptPlugin) {
+    typeScriptPlugin.tsTryParseTypeParameters();
+  } else if (flowPlugin) {
     if (match(tt.lessThan)) {
-      flowParseTypeParameterDeclaration();
+      flowPlugin.flowParseTypeParameterDeclaration();
     }
   }
   parseMethod(functionStart, isConstructor);
@@ -895,7 +859,7 @@ export function parseClassPropertyName(classContextId: number): void {
 }
 
 export function parsePostMemberNameModifiers(): void {
-  if (isTypeScriptEnabled) {
+  if (typeScriptPlugin) {
     const oldIsType = pushTypeContext(0);
     eat(tt.question);
     popTypeContext(oldIsType);
@@ -903,12 +867,12 @@ export function parsePostMemberNameModifiers(): void {
 }
 
 export function parseClassProperty(): void {
-  if (isTypeScriptEnabled) {
+  if (typeScriptPlugin) {
     eatTypeToken(tt.bang);
-    tsTryParseTypeAnnotation();
-  } else if (isFlowEnabled) {
+    typeScriptPlugin.tsTryParseTypeAnnotation();
+  } else if (flowPlugin) {
     if (match(tt.colon)) {
-      flowParseTypeAnnotation();
+      flowPlugin.flowParseTypeAnnotation();
     }
   }
 
@@ -923,7 +887,7 @@ export function parseClassProperty(): void {
 
 function parseClassId(isStatement: boolean, optionalId: boolean = false): void {
   if (
-    isTypeScriptEnabled &&
+    typeScriptPlugin &&
     (!isStatement || optionalId) &&
     isContextual(ContextualKeyword._implements)
   ) {
@@ -934,11 +898,11 @@ function parseClassId(isStatement: boolean, optionalId: boolean = false): void {
     parseBindingIdentifier(true);
   }
 
-  if (isTypeScriptEnabled) {
-    tsTryParseTypeParameters();
-  } else if (isFlowEnabled) {
+  if (typeScriptPlugin) {
+    typeScriptPlugin.tsTryParseTypeParameters();
+  } else if (flowPlugin) {
     if (match(tt.lessThan)) {
-      flowParseTypeParameterDeclaration();
+      flowPlugin.flowParseTypeParameterDeclaration();
     }
   }
 }
@@ -952,10 +916,10 @@ function parseClassSuper(): void {
   } else {
     hasSuper = false;
   }
-  if (isTypeScriptEnabled) {
-    tsAfterParseClassSuper(hasSuper);
-  } else if (isFlowEnabled) {
-    flowAfterParseClassSuper(hasSuper);
+  if (typeScriptPlugin) {
+    typeScriptPlugin.tsAfterParseClassSuper(hasSuper);
+  } else if (flowPlugin) {
+    flowPlugin.flowAfterParseClassSuper(hasSuper);
   }
 }
 
@@ -963,8 +927,8 @@ function parseClassSuper(): void {
 
 export function parseExport(): void {
   const exportIndex = state.tokens.length - 1;
-  if (isTypeScriptEnabled) {
-    if (tsTryParseExport()) {
+  if (typeScriptPlugin) {
+    if (typeScriptPlugin.tsTryParseExport()) {
       return;
     }
   }
@@ -997,13 +961,13 @@ export function parseExport(): void {
 }
 
 function parseExportDefaultExpression(): void {
-  if (isTypeScriptEnabled) {
-    if (tsTryParseExportDefaultExpression()) {
+  if (typeScriptPlugin) {
+    if (typeScriptPlugin.tsTryParseExportDefaultExpression()) {
       return;
     }
   }
-  if (isFlowEnabled) {
-    if (flowTryParseExportDefaultExpression()) {
+  if (flowPlugin) {
+    if (flowPlugin.flowTryParseExportDefaultExpression()) {
       return;
     }
   }
@@ -1027,19 +991,19 @@ function parseExportDefaultExpression(): void {
 }
 
 function parseExportDeclaration(): void {
-  if (isTypeScriptEnabled) {
-    tsParseExportDeclaration();
-  } else if (isFlowEnabled) {
-    flowParseExportDeclaration();
+  if (typeScriptPlugin) {
+    typeScriptPlugin.tsParseExportDeclaration();
+  } else if (flowPlugin) {
+    flowPlugin.flowParseExportDeclaration();
   } else {
     parseStatement(true);
   }
 }
 
 function isExportDefaultSpecifier(): boolean {
-  if (isTypeScriptEnabled && tsIsDeclarationStart()) {
+  if (typeScriptPlugin && typeScriptPlugin.tsIsDeclarationStart()) {
     return false;
-  } else if (isFlowEnabled && flowShouldDisallowExportDefaultSpecifier()) {
+  } else if (flowPlugin && flowPlugin.flowShouldDisallowExportDefaultSpecifier()) {
     return false;
   }
   if (match(tt.name)) {
@@ -1080,16 +1044,16 @@ export function parseExportFrom(): void {
 }
 
 function shouldParseExportStar(): boolean {
-  if (isFlowEnabled) {
-    return flowShouldParseExportStar();
+  if (flowPlugin) {
+    return flowPlugin.flowShouldParseExportStar();
   } else {
     return match(tt.star);
   }
 }
 
 function parseExportStar(): void {
-  if (isFlowEnabled) {
-    flowParseExportStar();
+  if (flowPlugin) {
+    flowPlugin.flowParseExportStar();
   } else {
     baseParseExportStar();
   }
@@ -1115,8 +1079,8 @@ function parseExportNamespace(): void {
 
 function shouldParseExportDeclaration(): boolean {
   return (
-    (isTypeScriptEnabled && tsIsDeclarationStart()) ||
-    (isFlowEnabled && flowShouldParseExportDeclaration()) ||
+    (typeScriptPlugin && typeScriptPlugin.tsIsDeclarationStart()) ||
+    (flowPlugin && flowPlugin.flowShouldParseExportDeclaration()) ||
     state.type === tt._var ||
     state.type === tt._const ||
     state.type === tt._let ||
@@ -1148,8 +1112,8 @@ export function parseExportSpecifiers(): void {
 }
 
 function parseExportSpecifier(): void {
-  if (isTypeScriptEnabled) {
-    tsParseExportSpecifier();
+  if (typeScriptPlugin) {
+    typeScriptPlugin.tsParseExportSpecifier();
     return;
   }
   parseIdentifier();
@@ -1206,11 +1170,11 @@ function parseMaybeImportReflection(): void {
 // Parses import declaration.
 
 export function parseImport(): void {
-  if (isTypeScriptEnabled && match(tt.name) && lookaheadType() === tt.eq) {
-    tsParseImportEqualsDeclaration();
+  if (typeScriptPlugin && match(tt.name) && lookaheadType() === tt.eq) {
+    typeScriptPlugin.tsParseImportEqualsDeclaration();
     return;
   }
-  if (isTypeScriptEnabled && isContextual(ContextualKeyword._type)) {
+  if (typeScriptPlugin && isContextual(ContextualKeyword._type)) {
     const lookahead = lookaheadTypeAndKeyword();
     if (lookahead.type === tt.name && lookahead.contextualKeyword !== ContextualKeyword._from) {
       // One of these `import type` cases:
@@ -1218,7 +1182,7 @@ export function parseImport(): void {
       // import type A from 'A';
       expectContextual(ContextualKeyword._type);
       if (lookaheadType() === tt.eq) {
-        tsParseImportEqualsDeclaration();
+        typeScriptPlugin.tsParseImportEqualsDeclaration();
         return;
       }
       // If this is an `import type...from` statement, then we already ate the
@@ -1257,8 +1221,8 @@ function parseImportSpecifierLocal(): void {
 
 // Parses a comma-separated list of module imports.
 function parseImportSpecifiers(): void {
-  if (isFlowEnabled) {
-    flowStartParseImportSpecifiers();
+  if (flowPlugin) {
+    flowPlugin.flowStartParseImportSpecifiers();
   }
 
   let first = true;
@@ -1301,12 +1265,12 @@ function parseImportSpecifiers(): void {
 }
 
 function parseImportSpecifier(): void {
-  if (isTypeScriptEnabled) {
-    tsParseImportSpecifier();
+  if (typeScriptPlugin) {
+    typeScriptPlugin.tsParseImportSpecifier();
     return;
   }
-  if (isFlowEnabled) {
-    flowParseImportSpecifier();
+  if (flowPlugin) {
+    flowPlugin.flowParseImportSpecifier();
     return;
   }
   parseImportedIdentifier();

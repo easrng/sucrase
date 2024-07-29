@@ -1,3 +1,4 @@
+import type CJSImportProcessor from "./CJSImportProcessor.js";
 import type CJSImportTransformer from "./transformers/CJSImportTransformer.js";
 import type ESMImportTransformer from "./transformers/ESMImportTransformer.js";
 import type FlowTransformer from "./transformers/FlowTransformer.js";
@@ -11,8 +12,16 @@ import type ReactHotLoaderTransformer from "./transformers/ReactHotLoaderTransfo
 import type TypeScriptTransformer from "./transformers/TypeScriptTransformer.js";
 
 export type Transformers = (
-  | {CJSImportTransformer: typeof CJSImportTransformer; ESMImportTransformer?: undefined}
-  | {ESMImportTransformer: typeof ESMImportTransformer; CJSImportTransformer?: undefined}
+  | {
+      CJSImportTransformer: typeof CJSImportTransformer;
+      CJSImportProcessor: typeof CJSImportProcessor;
+      ESMImportTransformer?: undefined;
+    }
+  | {
+      ESMImportTransformer: typeof ESMImportTransformer;
+      CJSImportTransformer?: undefined;
+      CJSImportProcessor?: undefined;
+    }
 ) & {
   FlowTransformer?: typeof FlowTransformer;
   JestHoistTransformer?: typeof JestHoistTransformer;

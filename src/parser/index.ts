@@ -1,3 +1,6 @@
+import type * as flowPluginType from "./plugins/flow.js";
+import type * as jsxPluginType from "./plugins/jsx/index.js";
+import type * as typeScriptPluginType from "./plugins/typescript.js";
 import type {Token} from "./tokenizer/index.js";
 import type {Scope} from "./tokenizer/state.js";
 import {augmentError, initParser, state} from "./traverser/base.js";
@@ -15,14 +18,14 @@ export class File {
 
 export function parse(
   input: string,
-  isJSXEnabled: boolean,
-  isTypeScriptEnabled: boolean,
-  isFlowEnabled: boolean,
+  jsxPluginArg?: typeof jsxPluginType,
+  typeScriptPluginArg?: typeof typeScriptPluginType,
+  flowPluginArg?: typeof flowPluginType,
 ): File {
-  if (isFlowEnabled && isTypeScriptEnabled) {
+  if (flowPluginArg && typeScriptPluginArg) {
     throw new Error("Cannot combine flow and typescript plugins.");
   }
-  initParser(input, isJSXEnabled, isTypeScriptEnabled, isFlowEnabled);
+  initParser(input, jsxPluginArg, typeScriptPluginArg, flowPluginArg);
   const result = parseFile();
   if (state.error) {
     throw augmentError(state.error);

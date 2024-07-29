@@ -2,8 +2,8 @@ import type {CoreOptions} from "../core.js";
 import {IdentifierRole} from "../parser/tokenizer/index.js";
 import {TokenType, TokenType as tt} from "../parser/tokenizer/types.js";
 import type TokenProcessor from "../TokenProcessor.js";
-import {startsWithLowerCase} from "../transformers/JSXTransformer.js";
 import getJSXPragmaInfo from "./getJSXPragmaInfo.js";
+import {startsWithLowerCase} from "./startsWithLowerCase.js";
 
 export function getNonTypeIdentifiers(tokens: TokenProcessor, options: CoreOptions): Set<string> {
   const jsxPragmaInfo = getJSXPragmaInfo(options);

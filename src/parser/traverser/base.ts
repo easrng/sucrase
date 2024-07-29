@@ -1,9 +1,12 @@
+import type * as flowPluginType from "../plugins/flow.js";
+import type * as jsxPluginType from "../plugins/jsx/index.js";
+import type * as typeScriptPluginType from "../plugins/typescript.js";
 import State from "../tokenizer/state.js";
 import {charCodes} from "../util/charcodes.js";
 
-export let isJSXEnabled: boolean;
-export let isTypeScriptEnabled: boolean;
-export let isFlowEnabled: boolean;
+export let jsxPlugin: typeof jsxPluginType | undefined;
+export let typeScriptPlugin: typeof typeScriptPluginType | undefined;
+export let flowPlugin: typeof flowPluginType | undefined;
 export let state: State;
 export let input: string;
 export let nextContextId: number;
@@ -47,14 +50,14 @@ export function locationForIndex(pos: number): Loc {
 
 export function initParser(
   inputCode: string,
-  isJSXEnabledArg: boolean,
-  isTypeScriptEnabledArg: boolean,
-  isFlowEnabledArg: boolean,
+  jsxPluginArg?: typeof jsxPluginType,
+  typeScriptPluginArg?: typeof typeScriptPluginType,
+  flowPluginArg?: typeof flowPluginType,
 ): void {
   input = inputCode;
   state = new State();
   nextContextId = 1;
-  isJSXEnabled = isJSXEnabledArg;
-  isTypeScriptEnabled = isTypeScriptEnabledArg;
-  isFlowEnabled = isFlowEnabledArg;
+  jsxPlugin = jsxPluginArg;
+  typeScriptPlugin = typeScriptPluginArg;
+  flowPlugin = flowPluginArg;
 }

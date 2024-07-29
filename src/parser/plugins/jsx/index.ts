@@ -10,12 +10,11 @@ import {
   Token,
 } from "../../tokenizer/index.js";
 import {TokenType as tt} from "../../tokenizer/types.js";
-import {input, isTypeScriptEnabled, state} from "../../traverser/base.js";
+import {input, typeScriptPlugin, state} from "../../traverser/base.js";
 import {parseExpression, parseMaybeAssign} from "../../traverser/expression.js";
 import {expect, unexpected} from "../../traverser/util.js";
 import {charCodes} from "../../util/charcodes.js";
 import {IS_IDENTIFIER_CHAR, IS_IDENTIFIER_START} from "../../util/identifier.js";
-import {tsTryParseJSXTypeArgument} from "../typescript.js";
 
 /**
  * Read token with JSX contents.
@@ -189,8 +188,8 @@ function jsxParseOpeningElement(initialTokenIndex: number): boolean {
     return false;
   }
   jsxParseElementName();
-  if (isTypeScriptEnabled) {
-    tsTryParseJSXTypeArgument();
+  if (typeScriptPlugin) {
+    typeScriptPlugin.tsTryParseJSXTypeArgument();
   }
   let hasSeenPropSpread = false;
   while (!match(tt.slash) && !match(tt.jsxTagEnd) && !state.error) {

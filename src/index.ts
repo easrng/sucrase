@@ -1,3 +1,4 @@
+import CJSImportProcessor from "./CJSImportProcessor.js";
 import {
   type CoreOptions,
   type SourceMapOptions,
@@ -29,6 +30,7 @@ function coreify(options: Options): CoreOptions {
   const transformers: Transformers = options.transforms.includes("imports")
     ? {
         CJSImportTransformer,
+        CJSImportProcessor,
       }
     : {
         ESMImportTransformer,
