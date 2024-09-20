@@ -1,15 +1,19 @@
 {
-  "name": "sucrase",
-  "version": "3.35.0",
-  "description": "Super-fast alternative to Babel for when you can target modern JS runtimes",
-  "author": "Alan Pierce <alangpierce@gmail.com>",
+  "name": "@easrng/sucrase",
+  "version": "2.0.0",
+  "description": "fork of sucrase for ixie",
   "license": "MIT",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/types/index.d.ts",
-  "bin": {
-    "sucrase": "./bin/sucrase"
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    "./*": {
+      "import": "./dist/esm/*",
+      "require": "./dist/cjs/*",
+      "types": "./dist/types/*"
+    }
   },
+  "files": ["./dist"],
   "scripts": {
     "build": "tsx script/build.ts",
     "fast-build": "tsx script/build.ts --fast",
@@ -33,19 +37,6 @@
     "test-with-coverage": "nyc mocha './test/**/*.ts'",
     "report-coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/alangpierce/sucrase.git"
-  },
-  "keywords": [
-    "babel",
-    "jsx",
-    "typescript",
-    "flow"
-  ],
-  "bugs": {
-    "url": "https://github.com/alangpierce/sucrase/issues"
-  },
   "devDependencies": {
     "@babel/core": "^7.22.5",
     "@jridgewell/trace-mapping": "^0.3.18",
@@ -66,20 +57,14 @@
     "prettier": "^2.8.8",
     "test262-harness": "^10.0.0",
     "ts-interface-builder": "^0.3.3",
-    "typescript": "~5.0"
+    "typescript": "~5.0",
+    "pirates": "^4.0.1",
+    "glob": "^10.3.10",
+    "tsx": "^4.16.2"
   },
   "dependencies": {
     "@jridgewell/gen-mapping": "^0.3.2",
-    "@rollup/plugin-commonjs": "^26.0.1",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-terser": "^0.4.4",
-    "commander": "^4.0.0",
-    "glob": "^10.3.10",
-    "lines-and-columns": "^1.1.6",
-    "pirates": "^4.0.1",
-    "rollup": "^4.19.1",
-    "rollup-plugin-visualizer": "^5.12.0",
-    "tsx": "^4.16.2"
+    "lines-and-columns": "^1.1.6"
   },
   "engines": {
     "node": ">=16 || 14 >=14.17"
