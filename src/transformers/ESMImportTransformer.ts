@@ -25,6 +25,8 @@ export default class ESMImportTransformer extends Transformer {
   private nonTypeIdentifiers: Set<string>;
   private declarationInfo: DeclarationInfo;
   private injectCreateRequireForImportRequire: boolean;
+  private dynamicImportFunction?: string;
+  private rewriteImportSpecifier?: (specifier: string) => string;
 
   constructor(
     readonly tokens: TokenProcessor,
@@ -46,6 +48,8 @@ export default class ESMImportTransformer extends Transformer {
         ? getDeclarationInfo(tokens)
         : EMPTY_DECLARATION_INFO;
     this.injectCreateRequireForImportRequire = Boolean(options.injectCreateRequireForImportRequire);
+    this.dynamicImportFunction = options.dynamicImportFunction;
+    this.rewriteImportSpecifier = options.rewriteImportSpecifier;
   }
 
   process(): boolean {
@@ -89,6 +93,15 @@ export default class ESMImportTransformer extends Transformer {
     }
     if (this.tokens.matches2(tt._export, tt.braceL)) {
       return this.processNamedExports();
+    }
+    if (this.rewriteImportSpecifier && this.tokens.matches2(tt._export, tt.star)) {
+      this.tokens.copyExpectedToken(tt._export);
+      this.tokens.copyExpectedToken(tt.star);
+      this.tokens.copyExpectedToken(tt._as);
+      this.tokens.copyExpectedToken(tt.name);
+      this.tokens.copyExpectedToken(tt.name);
+      this.tokens.replaceToken(this.rewriteImportSpecifier(this.tokens.currentTokenCode()));
+      return true;
     }
     if (
       this.tokens.matches2(tt._export, tt.name) &&
@@ -155,8 +168,13 @@ export default class ESMImportTransformer extends Transformer {
 
   private processImport(): boolean {
     if (this.tokens.matches2(tt._import, tt.parenL)) {
-      // Dynamic imports don't need to be transformed.
-      return false;
+      if (this.dynamicImportFunction) {
+        this.tokens.replaceToken(this.helperManager.getHelperName("dynamicImport"));
+        return true;
+      } else {
+        // Dynamic imports don't need to be transformed.
+        return false;
+      }
     }
 
     const snapshot = this.tokens.snapshot();
@@ -194,6 +212,10 @@ export default class ESMImportTransformer extends Transformer {
 
     if (this.tokens.matches1(tt.string)) {
       // This is a bare import, so we should proceed with the import.
+      if (this.rewriteImportSpecifier) {
+        this.tokens.replaceToken(this.rewriteImportSpecifier(this.tokens.currentTokenCode()));
+        return false;
+      }
       this.tokens.copyToken();
       return false;
     }
@@ -280,15 +302,26 @@ export default class ESMImportTransformer extends Transformer {
       this.tokens.copyExpectedToken(tt.braceR);
     }
 
+    let allImportsRemoved: boolean;
     if (this.keepUnusedImports) {
-      return false;
-    }
-    if (this.isTypeScriptTransformEnabled) {
-      return !foundNonTypeImport;
+      allImportsRemoved = false;
+    } else if (this.isTypeScriptTransformEnabled) {
+      allImportsRemoved = !foundNonTypeImport;
     } else if (this.isFlowTransformEnabled) {
       // In Flow, unlike TS, `import {} from 'foo';` preserves the import.
-      return foundAnyNamedImport && !foundNonTypeImport;
+      allImportsRemoved = foundAnyNamedImport && !foundNonTypeImport;
     } else {
+      allImportsRemoved = false;
+    }
+    if (allImportsRemoved) {
+      return true;
+    } else {
+      if (this.rewriteImportSpecifier && this.tokens.matchesContextual(ContextualKeyword._from)) {
+        this.tokens.copyToken();
+        if (this.tokens.matches1(tt.string)) {
+          this.tokens.replaceToken(this.rewriteImportSpecifier(this.tokens.currentTokenCode()));
+        }
+      }
       return false;
     }
   }
@@ -354,36 +387,43 @@ export default class ESMImportTransformer extends Transformer {
    * but we must remove the runtime import if all exports are type exports.
    */
   private processNamedExports(): boolean {
-    if (!this.isTypeScriptTransformEnabled) {
+    if (!(this.isTypeScriptTransformEnabled || this.rewriteImportSpecifier)) {
       return false;
     }
     this.tokens.copyExpectedToken(tt._export);
     this.tokens.copyExpectedToken(tt.braceL);
 
     const isReExport = isExportFrom(this.tokens);
-    let foundNonTypeExport = false;
+    if (!this.isTypeScriptTransformEnabled && !isReExport) {
+      return false;
+    }
+    let foundNonTypeExport = !this.isTypeScriptTransformEnabled;
     while (!this.tokens.matches1(tt.braceR)) {
-      const specifierInfo = getImportExportSpecifierInfo(this.tokens);
-      if (
-        specifierInfo.isType ||
-        (!isReExport && this.shouldElideExportedName(specifierInfo.leftName))
-      ) {
-        // Type export, so remove all tokens, including any comma.
-        while (this.tokens.currentIndex() < specifierInfo.endIndex) {
-          this.tokens.removeToken();
-        }
-        if (this.tokens.matches1(tt.comma)) {
-          this.tokens.removeToken();
+      if (this.isTypeScriptTransformEnabled) {
+        const specifierInfo = getImportExportSpecifierInfo(this.tokens);
+        if (
+          specifierInfo.isType ||
+          (!isReExport && this.shouldElideExportedName(specifierInfo.leftName))
+        ) {
+          // Type export, so remove all tokens, including any comma.
+          while (this.tokens.currentIndex() < specifierInfo.endIndex) {
+            this.tokens.removeToken();
+          }
+          if (this.tokens.matches1(tt.comma)) {
+            this.tokens.removeToken();
+          }
+        } else {
+          // Non-type export, so copy all tokens, including any comma.
+          foundNonTypeExport = true;
+          while (this.tokens.currentIndex() < specifierInfo.endIndex) {
+            this.tokens.copyToken();
+          }
+          if (this.tokens.matches1(tt.comma)) {
+            this.tokens.copyToken();
+          }
         }
       } else {
-        // Non-type export, so copy all tokens, including any comma.
-        foundNonTypeExport = true;
-        while (this.tokens.currentIndex() < specifierInfo.endIndex) {
-          this.tokens.copyToken();
-        }
-        if (this.tokens.matches1(tt.comma)) {
-          this.tokens.copyToken();
-        }
+        this.tokens.copyToken();
       }
     }
     this.tokens.copyExpectedToken(tt.braceR);
@@ -394,6 +434,9 @@ export default class ESMImportTransformer extends Transformer {
       this.tokens.removeToken();
       this.tokens.removeToken();
       removeMaybeImportAttributes(this.tokens);
+    } else if (isReExport && this.rewriteImportSpecifier) {
+      this.tokens.copyToken();
+      this.tokens.replaceToken(this.rewriteImportSpecifier(this.tokens.currentTokenCode()));
     }
 
     return true;

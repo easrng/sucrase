@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* eslint-disable no-console, import/no-extraneous-dependencies */
 import commander from "commander";
 import {mkdir, readdir, readFile, stat, writeFile} from "fs/promises";
 import {glob} from "glob";

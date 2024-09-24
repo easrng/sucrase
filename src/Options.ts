@@ -114,4 +114,12 @@ export interface CoreOptions {
    * File path to use in error messages, React display names, and source maps.
    */
   filePath?: string;
+  /**
+   * Replace dynamic imports with a call to a function (specifier) { [your code here] }
+   */
+  dynamicImportFunction?: string;
+  /**
+   * Function to rewrite static import specifiers.
+   */
+  rewriteImportSpecifier?: (specifier: string) => string;
 }

@@ -128,11 +128,11 @@ const HELPERS: {[name: string]: string} = {
 };
 
 export class HelperManager {
-  helperNames: {[baseName in keyof typeof HELPERS]?: string} = {};
+  helperNames: {[baseName in keyof typeof HELPERS | "dynamicImport"]?: string} = {};
   createRequireName: string | null = null;
-  constructor(readonly nameManager: NameManager) {}
+  constructor(readonly nameManager: NameManager, readonly dynamicImportFunction?: string) {}
 
-  getHelperName(baseName: keyof typeof HELPERS): string {
+  getHelperName(baseName: keyof typeof HELPERS | "dynamicImport"): string {
     let helperName = this.helperNames[baseName];
     if (helperName) {
       return helperName;
@@ -150,7 +150,11 @@ export class HelperManager {
     if (this.helperNames.asyncOptionalChainDelete) {
       this.getHelperName("asyncOptionalChain");
     }
-    for (const [baseName, helperCodeTemplate] of Object.entries(HELPERS)) {
+    const finalHelpers = Object.entries(HELPERS);
+    if (this.dynamicImportFunction) {
+      finalHelpers.push(["dynamicImport", this.dynamicImportFunction]);
+    }
+    for (const [baseName, helperCodeTemplate] of finalHelpers) {
       const helperName = this.helperNames[baseName];
       let helperCode = helperCodeTemplate;
       if (baseName === "optionalChainDelete") {
@@ -168,7 +172,10 @@ export class HelperManager {
       }
       if (helperName) {
         resultCode += " ";
-        resultCode += helperCode.replace(baseName, helperName).replace(/\s+/g, " ").trim();
+        resultCode +=
+          baseName === "dynamicImport"
+            ? `function ${helperName}(specifier){${helperCode}}`
+            : helperCode.replace(baseName, helperName).replace(/\s+/g, " ").trim();
       }
     }
     return resultCode;

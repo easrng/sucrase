@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import * as pirates from "pirates";
 
 import {type Options, transform} from "./index.js";

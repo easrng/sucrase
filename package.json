@@ -1,6 +1,6 @@
 {
   "name": "@easrng/sucrase",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "fork of sucrase for ixie",
   "license": "MIT",
   "main": "./dist/cjs/index.js",
@@ -13,7 +13,9 @@
       "types": "./dist/types/*"
     }
   },
-  "files": ["./dist"],
+  "files": [
+    "./dist"
+  ],
   "scripts": {
     "build": "tsx script/build.ts",
     "fast-build": "tsx script/build.ts --fast",
@@ -52,15 +54,15 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "~2.26",
     "eslint-plugin-prettier": "^4.2.1",
+    "glob": "^10.3.10",
     "mocha": "^10.2.0",
     "nyc": "^15.1.0",
+    "pirates": "^4.0.1",
     "prettier": "^2.8.8",
     "test262-harness": "^10.0.0",
     "ts-interface-builder": "^0.3.3",
-    "typescript": "~5.0",
-    "pirates": "^4.0.1",
-    "glob": "^10.3.10",
-    "tsx": "^4.16.2"
+    "tsx": "^4.16.2",
+    "typescript": "~5.0"
   },
   "dependencies": {
     "@jridgewell/gen-mapping": "^0.3.2",
