@@ -1,6 +1,6 @@
 {
   "name": "@easrng/sucrase",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "fork of sucrase for ixie",
   "license": "MIT",
   "main": "./dist/cjs/index.js",
