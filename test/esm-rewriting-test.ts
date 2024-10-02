@@ -56,11 +56,15 @@ for (const transforms of [[], ["typescript"], ["flow"]] satisfies Array<[Transfo
       export * as a from "static"
       export { e, a as f } from "static"
       export { default as b } from "static"
+      export { a }
+      export const a = b
       `,
         `
       export * as a from "rewrite"
       export { e, a as f } from "rewrite"
       export { default as b } from "rewrite"
+      export { a }
+      export const a = b
       `,
         {
           transforms,

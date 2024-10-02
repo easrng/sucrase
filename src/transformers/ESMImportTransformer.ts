@@ -390,11 +390,13 @@ export default class ESMImportTransformer extends Transformer {
     if (!(this.isTypeScriptTransformEnabled || this.rewriteImportSpecifier)) {
       return false;
     }
+    const snapshot = this.tokens.snapshot();
     this.tokens.copyExpectedToken(tt._export);
     this.tokens.copyExpectedToken(tt.braceL);
 
     const isReExport = isExportFrom(this.tokens);
     if (!this.isTypeScriptTransformEnabled && !isReExport) {
+      this.tokens.restoreToSnapshot(snapshot);
       return false;
     }
     let foundNonTypeExport = !this.isTypeScriptTransformEnabled;
