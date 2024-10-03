@@ -97,8 +97,10 @@ export default class ESMImportTransformer extends Transformer {
     if (this.rewriteImportSpecifier && this.tokens.matches2(tt._export, tt.star)) {
       this.tokens.copyExpectedToken(tt._export);
       this.tokens.copyExpectedToken(tt.star);
-      this.tokens.copyExpectedToken(tt._as);
-      this.tokens.copyExpectedToken(tt.name);
+      if (this.tokens.matches1(tt._as)) {
+        this.tokens.copyToken();
+        this.tokens.copyExpectedToken(tt.name);
+      }
       this.tokens.copyExpectedToken(tt.name);
       this.tokens.replaceToken(this.rewriteImportSpecifier(this.tokens.currentTokenCode()));
       return true;

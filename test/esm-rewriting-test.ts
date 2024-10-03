@@ -54,6 +54,7 @@ for (const transforms of [[], ["typescript"], ["flow"]] satisfies Array<[Transfo
       assertResult(
         `
       export * as a from "static"
+      export * from "static"
       export { e, a as f } from "static"
       export { default as b } from "static"
       export { a }
@@ -61,6 +62,7 @@ for (const transforms of [[], ["typescript"], ["flow"]] satisfies Array<[Transfo
       `,
         `
       export * as a from "rewrite"
+      export * from "rewrite"
       export { e, a as f } from "rewrite"
       export { default as b } from "rewrite"
       export { a }
