@@ -184,8 +184,9 @@ export default class TokenProcessor {
   }
 
   replaceToken(newCode: string): void {
-    this.resultCode += this.previousWhitespaceAndComments();
-    this.appendTokenPrefix();
+    const space = this.previousWhitespaceAndComments()
+    this.resultCode += space;
+    this.appendTokenPrefix(!!space);
     this.resultMappings[this.tokenIndex] = this.resultCode.length;
     this.resultCode += newCode;
     this.appendTokenSuffix();
@@ -193,8 +194,9 @@ export default class TokenProcessor {
   }
 
   replaceTokenTrimmingLeftWhitespace(newCode: string): void {
-    this.resultCode += this.previousWhitespaceAndComments().replace(/[^\r\n]/g, "");
-    this.appendTokenPrefix();
+    const space = this.previousWhitespaceAndComments().replace(/[^\r\n]/g, "");
+    this.resultCode += space;
+    this.appendTokenPrefix(!!space);
     this.resultMappings[this.tokenIndex] = this.resultCode.length;
     this.resultCode += newCode;
     this.appendTokenSuffix();
@@ -235,8 +237,9 @@ export default class TokenProcessor {
   }
 
   copyToken(): void {
-    this.resultCode += this.previousWhitespaceAndComments();
-    this.appendTokenPrefix();
+    const space = this.previousWhitespaceAndComments()
+    this.resultCode += space;
+    this.appendTokenPrefix(!!space);
     this.resultMappings[this.tokenIndex] = this.resultCode.length;
     this.resultCode += this.code.slice(
       this.tokens[this.tokenIndex].start,
@@ -247,8 +250,9 @@ export default class TokenProcessor {
   }
 
   copyTokenWithPrefix(prefix: string): void {
-    this.resultCode += this.previousWhitespaceAndComments();
-    this.appendTokenPrefix();
+    const space = this.previousWhitespaceAndComments()
+    this.resultCode += space;
+    this.appendTokenPrefix(!!space);
     this.resultCode += prefix;
     this.resultMappings[this.tokenIndex] = this.resultCode.length;
     this.resultCode += this.code.slice(
@@ -259,7 +263,7 @@ export default class TokenProcessor {
     this.tokenIndex++;
   }
 
-  private appendTokenPrefix(): void {
+  private appendTokenPrefix(hasSpace: boolean): void {
     const token = this.currentToken();
     if (token.numNullishCoalesceStarts || token.isOptionalChainStart) {
       token.isAsyncOperation = isAsyncOperation(this);
@@ -267,10 +271,11 @@ export default class TokenProcessor {
     if (!this.optionalChainingNullishEnabled) {
       return;
     }
+    const asyncPrefix = hasSpace ? "await " : " await "
     if (token.numNullishCoalesceStarts) {
       for (let i = 0; i < token.numNullishCoalesceStarts; i++) {
         if (token.isAsyncOperation) {
-          this.resultCode += "await ";
+          this.resultCode += asyncPrefix;
           this.resultCode += this.helperManager.getHelperName("asyncNullishCoalesce");
         } else {
           this.resultCode += this.helperManager.getHelperName("nullishCoalesce");
@@ -280,7 +285,7 @@ export default class TokenProcessor {
     }
     if (token.isOptionalChainStart) {
       if (token.isAsyncOperation) {
-        this.resultCode += "await ";
+        this.resultCode += asyncPrefix;
       }
       if (this.tokenIndex > 0 && this.tokenAtRelativeIndex(-1).type === tt._delete) {
         if (token.isAsyncOperation) {
